@@ -1,16 +1,15 @@
-FROM node:20-alpine
+FROM node:20
 
-WORKDIR /workdir
+WORKDIR /frontend
 
-ENV PATH /workdir/node_modules/.bin:$PATH
+ENV PATH /frontend/node_modules/.bin:$PATH
 
-COPY frontend/package.json ./
-COPY frontend/package-lock.json ./
+COPY ./frontend/package*.json /frontend/
+
 RUN npm install
-
-COPY /frontend /frontend/
 
 EXPOSE 3000
 
-# Start the app
+# The command to run your application
 CMD ["npm", "start"]
+# CMD ["sh"]
