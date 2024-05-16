@@ -14,12 +14,12 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 COPY backend /backend/
 # setup.sh is for aliases 
-RUN echo "source /backend/setup.sh" >> $HOME/.bashrc
+# RUN echo "source /backend/setup.sh" >> $HOME/.bashrc
 COPY docker/backend/requirements.txt /backend/
 
 
 RUN pip install -r requirements.txt 
-CMD /bin/bash
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 
 # docker image build -f docker/backend/.dockerfile -t backend .
 # docker container run --rm --name backend -v C:/Users/Chidu/NFT-secondhand/backend -it -p 8000:8000 backend
