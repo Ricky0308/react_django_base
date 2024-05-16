@@ -11,14 +11,14 @@ services:
       MYSQL_USER: nextex
       MYSQL_PASSWORD: yes
     ports:
-      - "3306:3306"
+      - "3333:3306"
   
   backend:
     build:
       context: ../
       dockerfile: docker/backend/Dockerfile
     volumes:
-      - ../backend:/workdir/backend
+      - ../backend:/backend
     ports:
       - "8000:8000"
     depends_on:
