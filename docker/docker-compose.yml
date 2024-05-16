@@ -18,7 +18,7 @@ services:
       context: ../
       dockerfile: docker/backend/Dockerfile
     volumes:
-      - ./backend:/workdir/backend
+      - ../backend:/workdir/backend
     ports:
       - "8000:8000"
     depends_on:
@@ -29,8 +29,8 @@ services:
       context: ../
       dockerfile: docker/frontend/Dockerfile
     volumes:
-      - ./frontend:/workdir/frontend
-      - /app/node_modules
+      - ../frontend:/frontend
+      - frontend_node_modules:/frontend/node_modules
     ports:
       - "3000:3000"
     depends_on:
@@ -38,3 +38,4 @@ services:
 
 volumes:
   nextex_data:
+  frontend_node_modules:
