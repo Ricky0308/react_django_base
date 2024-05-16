@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    volumes:
+      - nextex_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: pass
+      MYSQL_DATABASE: main_db
+      MYSQL_USER: nextex
+      MYSQL_PASSWORD: yes
+    ports:
+      - "3306:3306"
+  
+  backend:
+    build:
+      context: ../
+      dockerfile: docker/backend/Dockerfile
+    volumes:
+      - ./backend:/workdir/backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: ../
+      dockerfile: docker/frontend/Dockerfile
+    volumes:
+      - ./frontend:/workdir/frontend
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  nextex_data:
