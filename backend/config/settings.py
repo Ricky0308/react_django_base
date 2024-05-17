@@ -42,10 +42,11 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt',
-
     'authentication',
-    'user',
-    'book',
+    
+    'Profile',
+    # 'user',
+    # 'book',
     
     'django_extensions', # for ease of development
     'drf_yasg', # swagger

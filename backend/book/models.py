@@ -1,11 +1,11 @@
 from django.db import models
-from user.models import User
+from Profile.models import Profile
 
 class Book(models.Model):
-    owner = models.ForeignKey(User, related_name='owning_books', on_delete=models.CASCADE)
+    owner = models.ForeignKey(Profile, related_name='owning_books', on_delete=models.CASCADE)
     article = models.TextField()
     price = models.IntegerField() 
-    readers = models.ManyToManyField(User, related_name='readable_books') 
+    readers = models.ManyToManyField(Profile, related_name='readable_books') 
     
     class Meta:
         db_table = "book"
@@ -15,7 +15,7 @@ class Book(models.Model):
 
 
 class LP(models.Model):
-    owner = models.ForeignKey(User, related_name='lps', on_delete=models.CASCADE)
+    owner = models.ForeignKey(Profile, related_name='lps', on_delete=models.CASCADE)
     book = models.OneToOneField(Book, on_delete=models.CASCADE)
     article = models.TextField()
     
@@ -27,7 +27,7 @@ class LP(models.Model):
 
 
 class Review(models.Model):
-    owner = models.ForeignKey(User, related_name='reviews', on_delete=models.CASCADE)
+    owner = models.ForeignKey(Profile, related_name='reviews', on_delete=models.CASCADE)
     book = models.ForeignKey(Book, related_name='reviews', on_delete=models.CASCADE)
     is_parent = models.BooleanField(default=True)
     is_child = models.BooleanField(default=False)
