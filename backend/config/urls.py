@@ -38,7 +38,7 @@ urlpatterns = [
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='redoc'),
     
     # path("user/", include("user.urls")),
-    path("book/", include("book.urls")),
+    # path("book/", include("Book.urls")),
     
     # token
     path('token/', include("authentication.urls")),

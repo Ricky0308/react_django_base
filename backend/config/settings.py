@@ -45,8 +45,7 @@ INSTALLED_APPS = [
     'authentication',
     
     'Profile',
-    # 'user',
-    # 'book',
+    'Book',
     
     'django_extensions', # for ease of development
     'drf_yasg', # swagger
