@@ -143,7 +143,7 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTHENTICATION_BACKENDS = [
-    'authentication.authentication.EmailAuthenticationBackend',
+    'authentication.backend.EmailAuthenticationBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
