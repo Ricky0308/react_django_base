@@ -43,6 +43,9 @@ INSTALLED_APPS = [
 
     'user',
     'book',
+    
+    'django_extensions', # for ease of development
+    'drf_yasg', # swagger
 ]
 
 MIDDLEWARE = [
