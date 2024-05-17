@@ -7,6 +7,9 @@ def generate_id():
 class User(models.Model):
     user_id = models.CharField(max_length=9, primary_key=True, default=generate_id, editable=False)
     name = models.CharField(max_length=100)
+    
+    class Meta:
+        db_table = "user"
 
     def __str__(self):
         return self.name
