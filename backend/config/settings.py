@@ -12,6 +12,11 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+import environ
+
+# get environment variables
+env = environ.Env()
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,10 +26,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-cnjyl1lrojtj#2^$*uz5#(gw&v)63yihzi^+*n9bl51@_a2epb'
+SECRET_KEY=env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env("DEBUG")
 
 ALLOWED_HOSTS = []
 
@@ -93,11 +98,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'main_db',
+        'NAME': env("DB_NAME"),
         'USER': 'nextex',
-        'PASSWORD': 'yes',
+        'PASSWORD': env("DB_PASS"),
         'HOST': 'docker-db-1',
-        'PORT': '3306',  # MySQL default port
+        'PORT': env("DB_PORT"),  # MySQL default port
     }
 }
 
