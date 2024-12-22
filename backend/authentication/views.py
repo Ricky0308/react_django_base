@@ -20,22 +20,11 @@ from django.utils.decorators import method_decorator
 from rest_framework import viewsets
 
 from rest_framework import serializers
-
+from config.permissions import IsUserItselfOrAdmin
 from django.contrib.auth import get_user_model
 
 
 User = get_user_model()
-
-class IsUserItselfOrAdmin(permissions.BasePermission):
-    
-    def has_object_permission(self, request, view, target_user):
-        if request.user.is_staff:
-            return True
-        return request.user.id == target_user.id
-    
-    def has_permission(self, request, view):
-        # print(f"{request.user.id=}")
-        return request.user.is_authenticated
 
 
 # related to AuthUser not Profile
