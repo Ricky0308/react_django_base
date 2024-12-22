@@ -19,19 +19,13 @@ from drf_yasg.utils import swagger_auto_schema
 from django.utils.decorators import method_decorator
 from rest_framework import viewsets
 
-from rest_framework import serializers
 from config.permissions import IsUserItselfOrAdmin
 from django.contrib.auth import get_user_model
 
+from.serializers import AuthUserSerializer
+
 
 User = get_user_model()
-
-
-# related to AuthUser not Profile
-class AuthUserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = '__all__'
 
 
 @method_decorator(name='list', decorator=swagger_auto_schema(
