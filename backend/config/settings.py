@@ -44,9 +44,10 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'authentication',
     
+    # apps
     'Profile',
-    'Book',
     
+    # tools
     'django_extensions', # for ease of development
     'drf_yasg', # swagger
 ]
