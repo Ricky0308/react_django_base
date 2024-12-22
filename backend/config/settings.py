@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     'drf_yasg', # swagger
 ]
 
+AUTH_USER_MODEL = 'authentication.User'
+
 MIDDLEWARE = [
     "middlewares.log_request.LogRequestMiddleware",
     "corsheaders.middleware.CorsMiddleware",
