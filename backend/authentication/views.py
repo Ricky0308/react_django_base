@@ -1,32 +1,125 @@
+import uuid
+from rest_framework import status, serializers, exceptions, generics
 from rest_framework_simplejwt import views as jwt_views
 from rest_framework_simplejwt import exceptions as jwt_exp
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer, TokenObtainSerializer
 from rest_framework_simplejwt.settings import api_settings
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
-from rest_framework import status, serializers, exceptions
 from rest_framework.views import APIView
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import update_last_login
-from rest_framework import permissions
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
 from rest_framework.permissions import IsAdminUser
 
 from drf_yasg.utils import swagger_auto_schema
 from django.utils.decorators import method_decorator
 from rest_framework import viewsets
-
+from drf_yasg import openapi
 from config.permissions import IsUserItselfOrAdmin
 from django.contrib.auth import get_user_model
 
-from.serializers import AuthUserSerializer
+from.serializers import AuthUserSerializer, UserSignUpSerializer
+
+from django.utils.encoding import force_bytes, force_str
+from django.utils.html import strip_tags
+from django.template.loader import render_to_string
+from django.core.mail import send_mail
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.contrib.auth.tokens import default_token_generator
+from django.urls import reverse
+from django.conf import settings
+from .authentication import UserActivationAuthentication
+from rest_framework.permissions import AllowAny
+
+from django_ratelimit.decorators import ratelimit
+from django.db import transaction
 
 
 User = get_user_model()
 
+
+class UserSignUpView(generics.CreateAPIView):
+    serializer_class = UserSignUpSerializer
+    permission_classes = [AllowAny]
+
+    @swagger_auto_schema(
+        operation_description="Endpoint for user registration. Accepts user data and sends an activation email.",
+        request_body=UserSignUpSerializer,
+        responses={
+            201: openapi.Response(
+                description="User successfully created. Activation email sent.",
+                examples={
+                    "application/json": {
+                        "email": "user@example.com",
+                        "username": "user_12345678",
+                    }
+                },
+            ),
+            400: "Invalid input data.",
+        },
+    )
+    @method_decorator(ratelimit(key='ip', rate='10/m', block=True))
+    def post(self, request, *args, **kwargs):
+        serializer = UserSignUpSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = self.perform_create(serializer)
+        self.send_user_activation_email(user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @transaction.atomic
+    def perform_create(self, serializer):
+        random_username = self.generate_random_username()
+        user = serializer.save(username=random_username)
+        user.is_active = False
+        user.save()
+        return user
+
+    def generate_random_username(self):
+        while True:
+            username = f"user_{uuid.uuid4().hex[:8]}"
+            if not User.objects.filter(username=username).exists():
+                return username
+
+    def send_user_activation_email(self, user):
+        # replace below with frontend url
+        activation_url = self.get_activation_url(user)
+        email_subject = "Welcome to Hub of AI!"
+        email_body = strip_tags(render_to_string("email/user_activation.txt", {"activation_url":activation_url}))
+        
+        from_email = settings.EMAIL_HOST_USER
+        recipient_list = [user.email]
+        send_mail(email_subject, email_body, from_email, recipient_list)
+
+    def get_activation_url(self, user):
+        domain = settings.WEBPAGE_DOMAIN
+        uid = urlsafe_base64_encode(force_bytes(user.id))
+        token = default_token_generator.make_token(user)
+        distination = reverse('user-activate', kwargs={'uidb64': uid, 'token': token})
+        
+        print(f"{domain=}")
+        print(f"{distination=}")
+        return domain + reverse('user-activate', kwargs={'uidb64': uid, 'token': token})
+
+class UserActivationView(APIView):
+    authentication_classes = [UserActivationAuthentication]
+
+    def get(self, request, uidb64, token):
+        decoded_uid = urlsafe_base64_decode(uidb64)
+        id = force_str(decoded_uid)
+        user = User.objects.get(id=id)
+        print("token validation")
+        if self.validate_activation_token(user, token) and not user.is_active:
+            user.is_active = True 
+            user.save()
+            return Response({"message" : "User activated!", "success" : True})
+        return Response({"message":"Something went wrong", "success" : False})
+    
+    def validate_activation_token(self, user, token):
+        token_generator = default_token_generator
+        return token_generator.check_token(user, token)
 
 @method_decorator(name='list', decorator=swagger_auto_schema(
     operation_description="description from swagger_auto_schema via method_decorator"

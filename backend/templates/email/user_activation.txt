@@ -1,0 +1,4 @@
+Account Registration Confirmation
+Click the URL below to complete your account registration:
+{{ activation_url }}
+* Please ensure that the URL begins with our domain "https://hub_of_ai.~~~~".
