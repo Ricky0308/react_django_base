@@ -202,5 +202,8 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = env("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD=env("EMAIL_HOST_PASSWORD")
 
+# used for expiration time of user activation token for sign up
+PASSWORD_RESET_TIMEOUT = 60 * 60 * 1 # in seconds
+
 # other 
 WEBPAGE_DOMAIN = "http://127.0.0.1:8000"
