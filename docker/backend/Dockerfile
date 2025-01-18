@@ -1,4 +1,4 @@
-FROM python:3.8-slim
+FROM python:3.13-slim
 
 # Set timezone and create symbolic links
 RUN ln -fs /usr/share/zoneinfo/Asia/Tokyo /etc/localtime && \
