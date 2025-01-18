@@ -12,7 +12,12 @@ User = get_user_model()
 # CookieHandlerJWTAuthentication checks if tokens are valid 
 class CookieHandlerJWTAuthentication(JWTAuthentication):
     def authenticate(self, request):
-        # Cookieヘッダーからaccess_tokenを取得
+        
+        # allow requests to /swagger and /redoc
+        if request.path.startswith('/swagger/') or request.path.startswith('/redoc/'):
+            return None  # Skip authentication
+        
+        # get access_token from Cookie header
         access_token = request.COOKIES.get('access')
         if not access_token:
             Response({"message": 'no Token'})
