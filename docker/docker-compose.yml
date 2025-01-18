@@ -4,11 +4,11 @@ services:
   db:
     image: mysql:8.0
     volumes:
-      - nextex_data:/var/lib/mysql
+      - db_volume:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: pass
       MYSQL_DATABASE: main_db
-      MYSQL_USER: nextex
+      MYSQL_USER: user
       MYSQL_PASSWORD: yes
     ports:
       - "3333:3306"
@@ -37,5 +37,5 @@ services:
       - backend
 
 volumes:
-  nextex_data:
+  db_volume:
   frontend_node_modules:

@@ -99,7 +99,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': env("DB_NAME"),
-        'USER': 'nextex',
+        'USER': env("DB_USER"),
         'PASSWORD': env("DB_PASS"),
         'HOST': 'docker-db-1',
         'PORT': env("DB_PORT"),  # MySQL default port
