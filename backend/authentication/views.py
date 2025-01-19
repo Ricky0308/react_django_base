@@ -239,6 +239,9 @@ class TokenObtainView(jwt_views.TokenObtainPairView):
 
 
 class TokenRefresh(APIView):
+    
+    permission_classes = [AllowAny]
+    
     def post(self, request, *args, **kwargs):
         if not request.COOKIES.get("refresh"):
             raise Exception("refresh token is not set")
