@@ -18,7 +18,7 @@ from drf_yasg.utils import swagger_auto_schema
 from django.utils.decorators import method_decorator
 from rest_framework import viewsets
 from drf_yasg import openapi
-from config.permissions import IsUserItselfOrAdmin
+from config.permissions import IsAccessingOwnAccount
 from django.contrib.auth import get_user_model
 
 from.serializers import AuthUserSerializer, UserSignUpSerializer
@@ -125,7 +125,7 @@ class UserActivationView(APIView):
     operation_description="description from swagger_auto_schema via method_decorator"
 ))
 class AuthUserViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsUserItselfOrAdmin]
+    permission_classes = [IsAccessingOwnAccount, IsAdminUser]
     queryset = User.objects.all()
     serializer_class = AuthUserSerializer
     http_method_names = ['get', 'patch']
@@ -138,7 +138,7 @@ class AuthUserViewSet(viewsets.ModelViewSet):
             # Allow access only to admin users
             permission_classes = [IsAdminUser]
         else:
-            permission_classes = [IsUserItselfOrAdmin]
+            permission_classes = [IsAccessingOwnAccount, IsAdminUser]
         return [permission() for permission in permission_classes]
     
     def get_queryset(self):
