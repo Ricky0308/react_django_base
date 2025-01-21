@@ -226,14 +226,16 @@ class TokenObtainView(jwt_views.TokenObtainPairView):
             serializer.validated_data["access"],
             max_age=60 * 60 * 24,
             httponly=True,
-            samesite="None"
+            samesite="None",
+            secure=settings.ACCESS_TOKEN_SECURE
         )
         res.set_cookie(
             "refresh",
             serializer.validated_data["refresh"],
             max_age=60 * 60 * 24 * 30,
             httponly=True,
-            samesite="None"
+            samesite="None",
+            secure=settings.ACCESS_TOKEN_SECURE
         )
 
         # Finally, return the access_token and refresh_token
@@ -264,14 +266,16 @@ class TokenRefresh(APIView):
             serializer.validated_data["access"],
             max_age=60 * 24 * 24 * 30,
             httponly=True,
-            samesite="None"
+            samesite="None",
+            secure=settings.ACCESS_TOKEN_SECURE
         )
         response.set_cookie(
             "refresh",
             serializer.validated_data["refresh"],
             max_age=60 * 24 * 24 * 30,
             httponly=True,
-            samesite="None"
+            samesite="None",
+            secure=settings.ACCESS_TOKEN_SECURE
         )
         print(response.cookies)
         return response

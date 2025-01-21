@@ -194,6 +194,9 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES" : ["Bearer"]
 }
 
+# session token cookie property
+ACCESS_TOKEN_SECURE = False if DEBUG else True
+
 #email setting 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
