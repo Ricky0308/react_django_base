@@ -240,7 +240,7 @@ class TokenObtainView(jwt_views.TokenObtainPairView):
 
 class TokenRefresh(APIView):
     
-    permission_classes = [AllowAny]
+    permission_classes = [AllowAny] # accessible even after access token expires
     
     def post(self, request, *args, **kwargs):
         if not request.COOKIES.get("refresh"):
