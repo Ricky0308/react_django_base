@@ -224,17 +224,17 @@ class TokenObtainView(jwt_views.TokenObtainPairView):
         res.set_cookie(
             "access",
             serializer.validated_data["access"],
-            max_age=60 * 60 * 24,
+            max_age=settings.ACCESS_TOKEN_LIFETIME,
             httponly=True,
-            samesite="None",
+            samesite=settings.ACCESS_TOKEN_SAMESITE,
             secure=settings.ACCESS_TOKEN_SECURE
         )
         res.set_cookie(
             "refresh",
             serializer.validated_data["refresh"],
-            max_age=60 * 60 * 24 * 30,
+            max_age=settings.REFRESH_TOKEN_LIFETIME,
             httponly=True,
-            samesite="None",
+            samesite=settings.ACCESS_TOKEN_SAMESITE,
             secure=settings.ACCESS_TOKEN_SECURE
         )
 
@@ -264,17 +264,17 @@ class TokenRefresh(APIView):
         response.set_cookie(
             "access",
             serializer.validated_data["access"],
-            max_age=60 * 24 * 24 * 30,
             httponly=True,
-            samesite="None",
+            max_age=settings.ACCESS_TOKEN_LIFETIME,
+            samesite=settings.ACCESS_TOKEN_SAMESITE,
             secure=settings.ACCESS_TOKEN_SECURE
         )
         response.set_cookie(
             "refresh",
             serializer.validated_data["refresh"],
-            max_age=60 * 24 * 24 * 30,
             httponly=True,
-            samesite="None",
+            max_age=settings.REFRESH_TOKEN_LIFETIME,
+            samesite=settings.ACCESS_TOKEN_SAMESITE,
             secure=settings.ACCESS_TOKEN_SECURE
         )
         print(response.cookies)

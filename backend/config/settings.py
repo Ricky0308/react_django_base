@@ -183,19 +183,20 @@ REST_FRAMEWORK = {
     ],
 }
 
-SIMPLE_JWT = {
-    # only for development
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=30),
+# session token cookie property
+ACCESS_TOKEN_SECURE = False if DEBUG else True
+ACCESS_TOKEN_SAMESITE = False if DEBUG else True
+ACCESS_TOKEN_LIFETIME = 60 * 60 * 24 * 7 if DEBUG else 60 * 5 # in seconds
+REFRESH_TOKEN_LIFETIME = 60 * 60 * 24 * 14 # in seconds
 
-    # "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=ACCESS_TOKEN_LIFETIME),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=REFRESH_TOKEN_LIFETIME),
     "ROTATE_REFRESH_TOKENS": True,
-    "BLACKLIST_AFTER_ROTATION": False,
+    "BLACKLIST_AFTER_ROTATION": True,
     "AUTH_HEADER_TYPES" : ["Bearer"]
 }
 
-# session token cookie property
-ACCESS_TOKEN_SECURE = False if DEBUG else True
 
 #email setting 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
