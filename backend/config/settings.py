@@ -184,8 +184,8 @@ REST_FRAMEWORK = {
 }
 
 # session token cookie property
-ACCESS_TOKEN_SECURE = False if DEBUG else True
-ACCESS_TOKEN_SAMESITE = False if DEBUG else True
+ACCESS_TOKEN_SECURE = True
+ACCESS_TOKEN_SAMESITE = "None"
 ACCESS_TOKEN_LIFETIME = 60 * 60 * 24 * 7 if DEBUG else 60 * 5 # in seconds
 REFRESH_TOKEN_LIFETIME = 60 * 60 * 24 * 14 # in seconds
 
