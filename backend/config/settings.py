@@ -157,14 +157,19 @@ AUTHENTICATION_BACKENDS = [
 
 # CORS
 # Allow the inclusion of cookies in cross-origin HTTP requests
-# CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_CREDENTIALS = True  # Enable this if you need to send cookies
+
 # List of URLs (origins) that are allowed to access
 CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:3000",  # For development
+    "http://127.0.0.1:5173",  # For development
+    "http://localhost:5173",  # For development
 ]
-# CORS_ALLOW_ALL_ORIGINS = True # never use this except for testing
+
+# If you want to allow all origins (not recommended for production)
+# CORS_ALLOW_ALL_ORIGINS = True  # Use this only for testing
+
 # Allow preflight (pre-request) caching for 30 minutes
-# CORS_PREFLIGHT_MAX_AGE = 1800  # 30 minutes in seconds
+CORS_PREFLIGHT_MAX_AGE = 1800  # 30 minutes in seconds
 
 # REST framework
 REST_FRAMEWORK = { 
@@ -210,4 +215,4 @@ EMAIL_HOST_PASSWORD=env("EMAIL_HOST_PASSWORD")
 PASSWORD_RESET_TIMEOUT = 60 * 60 * 1 # in seconds
 
 # other 
-WEBPAGE_DOMAIN = "http://127.0.0.1:8000"
+WEBPAGE_DOMAIN = "http://127.0.0.1:5173"
