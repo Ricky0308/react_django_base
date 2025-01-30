@@ -160,11 +160,13 @@ class ExtendedTokenObtainSerializer(TokenObtainSerializer):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
+        # Remove the username field and add the email field
+        self.fields.pop(self.username_field, None)
         self.fields["email"] = serializers.CharField(write_only=True)
         
     def validate(self, attrs):
+        # Use email for authentication
         authenticate_kwargs = {
-            self.username_field: attrs[self.username_field],
             "email": attrs["email"],
             "password": attrs["password"],
         }
@@ -205,7 +207,6 @@ class TokenObtainView(jwt_views.TokenObtainPairView):
         self.serializer_class = ExtendedTokenObtainSerializer
     
     def post(self, request, *args, **kwargs):
-        # Retrieve the desired Serializer (in this case, the serializers.TokenObtainPairSerializer used by TokenObtainPairView)
         serializer = self.get_serializer(data=request.data)
         try:
             serializer.is_valid(raise_exception=True)
