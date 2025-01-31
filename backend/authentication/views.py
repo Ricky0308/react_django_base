@@ -213,7 +213,7 @@ class TokenObtainView(jwt_views.TokenObtainPairView):
         except jwt_exp.TokenError as e:
             raise jwt_exp.InvalidToken(e.args[0])
 
-        res = Response(serializer.validated_data, status=status.HTTP_200_OK)
+        res = Response({"message": "Login successful", "success": True}, status=status.HTTP_200_OK)
 
         try:
             res.delete_cookie("access_token")
@@ -258,7 +258,7 @@ class TokenRefresh(APIView):
         except jwt_exp.TokenError as e:
             raise jwt_exp.InvalidToken(e.args[0])
 
-        response = Response(serializer.validated_data, status=status.HTTP_200_OK)
+        response = Response({"message": "Token refresh successful", "success": True}, status=status.HTTP_200_OK)
         # delete existing cookies
         response.delete_cookie("access")
         response.delete_cookie("refresh")
@@ -278,5 +278,4 @@ class TokenRefresh(APIView):
             samesite=settings.ACCESS_TOKEN_SAMESITE,
             secure=settings.ACCESS_TOKEN_SECURE
         )
-        print(response.cookies)
         return response
