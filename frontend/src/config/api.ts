@@ -1,0 +1,20 @@
+export const API_BASE_URL = 'http://localhost:8000';
+
+export const API_ENDPOINTS = {
+  auth: {
+    login: `${API_BASE_URL}/auth/token/`,
+    refresh: `${API_BASE_URL}/auth/token/refresh/`,
+    signup: `${API_BASE_URL}/auth/sign-up/`,
+  },
+  user: {
+    // From AuthUserViewSet
+    list: `${API_BASE_URL}/auth/user/`,
+    detail: (userId: string) => `${API_BASE_URL}/auth/user/${userId}/`,
+    update: (userId: string) => `${API_BASE_URL}/auth/user/${userId}/`,
+  },
+  profile: {
+    hello: `${API_BASE_URL}/profile/hello/`,
+    // Add other profile endpoints
+  },
+  // Add other API endpoint categories
+}; 
