@@ -20,6 +20,7 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from django.conf import settings
+from csrf.views import GetCSRFTokenView
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -41,7 +42,11 @@ urlpatterns = [
     # token
     path('auth/', include("authentication.urls")),
     
+    # models
     path("profile/", include("Profile.urls")),
+    
+    # csrf
+    path('csrf/', GetCSRFTokenView.as_view(), name='csrf'),
 ]
 
 if settings.DEBUG:  

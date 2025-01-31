@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'authentication',
+    'csrf',
     
     # apps
     'Profile',
@@ -65,7 +66,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    'middlewares.csrf_protection.CSRFProtectionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -154,6 +155,14 @@ AUTHENTICATION_BACKENDS = [
     'authentication.backend.EmailAuthenticationBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
+
+# CSRF token
+CSRF_COOKIE_NAME = "csrftoken"
+CSRF_HEADER_NAME = "HTTP_X_CSRFTOKEN"
+CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_SECURE = True 
+CSRF_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_AGE = 60 * 5 # in seconds
 
 # CORS
 # Allow the inclusion of cookies in cross-origin HTTP requests
