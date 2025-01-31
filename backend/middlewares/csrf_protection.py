@@ -35,14 +35,15 @@ class CSRFProtectionMiddleware(MiddlewareMixin):
         response = requests.post("https://api.example.com/endpoint/", headers=headers, cookies=cookies)
     """
     def process_view(self, request, view_func, view_args, view_kwargs):
-        
-        if settings.DEBUG:
-            return None
 
         # Only enforce CSRF on state-changing methods
         if request.method in ('POST', 'PUT', 'PATCH', 'DELETE'):
             csrf_token_cookie = request.COOKIES.get(settings.CSRF_COOKIE_NAME)
             csrf_token_header = request.META.get(settings.CSRF_HEADER_NAME)
+            
+            if settings.DEBUG:
+                print("(debug) CSRF tokens matched: ", csrf_token_cookie == csrf_token_header)
+                return None
 
             if not csrf_token_cookie or not csrf_token_header:
                 return HttpResponseForbidden("CSRF token missing.")
