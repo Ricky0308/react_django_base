@@ -1,4 +1,5 @@
 import { fetchCSRFToken } from './csrfTokenManager';
+import { MESSAGES } from '../../utils/messages';
 
 export const baseService = {
   headers: {
@@ -25,7 +26,7 @@ export const baseService = {
 
   handleResponse: async (response: Response) => {
     if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
+      throw new Error(MESSAGES.general.apiError(response.status));
     }
     return response.json();
   },

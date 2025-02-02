@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { userService } from '../api/userService';
+import { MESSAGES } from '../../../utils/messages';
 
 export function UserTest() {
   const [message, setMessage] = useState('');
@@ -10,10 +11,10 @@ export function UserTest() {
     try {
       const response = await userService.list();
       setUserData(response);
-      setMessage('Users listed successfully');
+      setMessage(MESSAGES.user.listSuccess);
       console.log('Users:', response);
     } catch (error) {
-      setMessage('Failed to list users: ' + error.message);
+      setMessage(MESSAGES.user.listFailed);
     }
   };
 
@@ -21,10 +22,10 @@ export function UserTest() {
     try {
       const response = await userService.getDetails(userId);
       setUserData(response);
-      setMessage('User details retrieved successfully');
+      setMessage(MESSAGES.user.detailsSuccess);
       console.log('User details:', response);
     } catch (error) {
-      setMessage('Failed to get user details: ' + error.message);
+      setMessage(MESSAGES.user.detailsFailed);
     }
   };
 
@@ -35,10 +36,10 @@ export function UserTest() {
         last_name: 'User'
       });
       setUserData(response);
-      setMessage('User updated successfully');
+      setMessage(MESSAGES.user.updateSuccess);
       console.log('Update response:', response);
     } catch (error) {
-      setMessage('Failed to update user: ' + error.message);
+      setMessage(MESSAGES.user.updateFailed);
     }
   };
 

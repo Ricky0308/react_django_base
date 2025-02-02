@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { authService } from '../api/authService';
+import { MESSAGES } from '../../../utils/messages';
 
 export function AuthTest() {
   const [message, setMessage] = useState('');
@@ -9,30 +10,30 @@ export function AuthTest() {
   const handleLogin = async () => {
     try {
       const response = await authService.login({ email, password });
-      setMessage('Login successful');
+      setMessage(MESSAGES.auth.loginSuccess);
       console.log('Login response:', response);
     } catch (error) {
-      setMessage('Login failed: ' + error.message);
+      setMessage(MESSAGES.auth.loginFailed);
     }
   };
 
   const handleSignup = async () => {
     try {
       const response = await authService.signup({ email, password });
-      setMessage('Signup successful');
+      setMessage(MESSAGES.auth.signupSuccess);
       console.log('Signup response:', response);
     } catch (error) {
-      setMessage('Signup failed: ' + error.message);
+      setMessage(MESSAGES.auth.signupFailed);
     }
   };
 
   const handleRefresh = async () => {
     try {
       const response = await authService.refresh();
-      setMessage('Token refresh successful');
+      setMessage(MESSAGES.auth.refreshSuccess);
       console.log('Refresh response:', response);
     } catch (error) {
-      setMessage('Token refresh failed: ' + error.message);
+      setMessage(MESSAGES.auth.refreshFailed);
     }
   };
 

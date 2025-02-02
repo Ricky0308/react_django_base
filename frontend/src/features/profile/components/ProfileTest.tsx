@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { profileService } from '../api/profileService';
+import { MESSAGES } from '../../../utils/messages';
 
 export function ProfileTest() {
   const [message, setMessage] = useState('');
@@ -9,10 +10,10 @@ export function ProfileTest() {
     try {
       const response = await profileService.hello();
       setResponse(response);
-      setMessage('Hello endpoint called successfully');
+      setMessage(MESSAGES.profile.helloSuccess);
       console.log('Hello response:', response);
     } catch (error) {
-      setMessage('Failed to call hello endpoint: ' + error.message);
+      setMessage(MESSAGES.profile.helloFailed);
     }
   };
 
