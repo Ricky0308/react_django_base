@@ -6,6 +6,9 @@ export const API_ENDPOINTS = {
     refresh: `${API_BASE_URL}/auth/token/refresh/`,
     signup: `${API_BASE_URL}/auth/sign-up/`,
   },
+  csrf: {
+    get: `${API_BASE_URL}/csrf/`,
+  },
   user: {
     // From AuthUserViewSet
     list: `${API_BASE_URL}/auth/user/`,
