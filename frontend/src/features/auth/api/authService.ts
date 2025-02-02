@@ -13,34 +13,23 @@ interface SignUpCredentials {
 
 export const authService = {
   login: async (credentials: LoginCredentials) => {
-    const response = await fetch(API_ENDPOINTS.auth.login, {
+    return baseService.request(API_ENDPOINTS.auth.login, {
       method: 'POST',
-      headers: baseService.headers,
       body: JSON.stringify(credentials),
-      credentials: 'include'
     });
-
-    return baseService.handleResponse(response);
   },
 
   signup: async (credentials: SignUpCredentials) => {
-    const response = await fetch(API_ENDPOINTS.auth.signup, {
+    return baseService.request(API_ENDPOINTS.auth.signup, {
       method: 'POST',
-      headers: baseService.headers,
       body: JSON.stringify(credentials),
     });
-
-    return baseService.handleResponse(response);
   },
 
   refresh: async () => {
-    const response = await fetch(API_ENDPOINTS.auth.refresh, {
+    return baseService.request(API_ENDPOINTS.auth.refresh, {
       method: 'POST',
-      headers: baseService.headers,
-      credentials: 'include'
     });
-
-    return baseService.handleResponse(response);
   },
 
   // Add other auth-related API calls
