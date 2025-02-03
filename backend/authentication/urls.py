@@ -1,4 +1,4 @@
-from authentication.views import TokenObtainView, TokenRefresh
+from authentication.views import TokenObtainView, TokenRefresh, PasswordResetView, PasswordResetConfirmView
 from rest_framework.routers import DefaultRouter
 from django.urls import path
 from .views import AuthUserViewSet, UserSignUpView, UserActivationView
@@ -11,6 +11,8 @@ urlpatterns = [
     
     path('sign-up/', UserSignUpView.as_view(), name='sign-up'),
     path('user-activate/<str:uidb64>/<str:token>/', UserActivationView.as_view(), name='user-activate'),
+    path('password-reset/', PasswordResetView.as_view(), name='password-reset'),
+    path('password-reset-confirm/', PasswordResetConfirmView.as_view(), name='password-reset-confirm'),
 ]
 
 router = DefaultRouter()
