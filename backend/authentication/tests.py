@@ -14,4 +14,11 @@ class PasswordResetTests(APITestCase):
         url = reverse('password-reset-confirm')
         data = {'uidb64': 'valid_uid', 'token': 'valid_token', 'new_password': 'new_password123'}
         response = self.client.post(url, data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK) 
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+class SignOutTests(APITestCase):
+    def test_sign_out(self):
+        url = reverse('sign-out')
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['message'], "Successfully signed out.") 

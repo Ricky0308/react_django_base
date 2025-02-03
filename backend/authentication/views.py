@@ -305,3 +305,10 @@ class PasswordResetConfirmView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response({"message": "Password has been reset successfully."}, status=status.HTTP_200_OK)
+
+class SignOutView(APIView):
+    def post(self, request):
+        response = Response({"message": "Successfully signed out."}, status=status.HTTP_200_OK)
+        response.delete_cookie('access')  # Assuming JWT token is stored in a cookie named 'access'
+        response.delete_cookie('refresh')  # If you have a refresh token
+        return response
