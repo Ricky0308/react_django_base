@@ -21,7 +21,7 @@ from drf_yasg import openapi
 from config.permissions import IsAccessingOwnAccount
 from django.contrib.auth import get_user_model
 
-from.serializers import AuthUserSerializer, UserSignUpSerializer
+from.serializers import AuthUserSerializer, UserSignUpSerializer, PasswordResetSerializer, PasswordResetConfirmSerializer
 
 from django.utils.encoding import force_bytes, force_str
 from django.utils.html import strip_tags
@@ -279,3 +279,29 @@ class TokenRefresh(APIView):
             secure=settings.ACCESS_TOKEN_SECURE
         )
         return response
+
+class PasswordResetView(generics.GenericAPIView):
+    serializer_class = PasswordResetSerializer
+    permission_classes = [AllowAny]
+
+    @method_decorator(ratelimit(key='ip', rate='5/m', block=True))
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            logger.info("Password reset email sent.")
+            return Response({"message": "Password reset email sent."}, status=status.HTTP_200_OK)
+        else:
+            logger.warning("Password reset request failed.")
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class PasswordResetConfirmView(generics.GenericAPIView):
+    serializer_class = PasswordResetConfirmSerializer
+    permission_classes = [AllowAny]
+
+    @method_decorator(ratelimit(key='ip', rate='5/m', block=True))
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({"message": "Password has been reset successfully."}, status=status.HTTP_200_OK)
