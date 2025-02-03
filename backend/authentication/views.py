@@ -36,6 +36,7 @@ from rest_framework.permissions import AllowAny
 
 from django_ratelimit.decorators import ratelimit
 from django.db import transaction
+from rest_framework.permissions import IsAuthenticated
 
 
 User = get_user_model()
@@ -312,3 +313,11 @@ class SignOutView(APIView):
         response.delete_cookie('access')  # Assuming JWT token is stored in a cookie named 'access'
         response.delete_cookie('refresh')  # If you have a refresh token
         return response
+
+class UserDeleteView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, *args, **kwargs):
+        user = request.user
+        user.delete()
+        return Response({"message": "User deleted successfully."}, status=status.HTTP_204_NO_CONTENT)

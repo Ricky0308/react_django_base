@@ -1,6 +1,9 @@
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 class PasswordResetTests(APITestCase):
     def test_password_reset_request(self):
@@ -21,4 +24,15 @@ class SignOutTests(APITestCase):
         url = reverse('sign-out')
         response = self.client.post(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['message'], "Successfully signed out.") 
+        self.assertEqual(response.data['message'], "Successfully signed out.")
+
+class UserDeleteTests(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(email='user@example.com', password='password123')
+        self.client.force_authenticate(user=self.user)
+
+    def test_user_delete(self):
+        url = reverse('user-delete')
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(User.objects.filter(email='user@example.com').exists()) 
