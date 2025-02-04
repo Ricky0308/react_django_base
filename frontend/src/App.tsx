@@ -7,6 +7,7 @@ import Signup from './pages/Signup';
 import PasswordReset from './pages/PasswordReset';
 import UserDelete from './pages/UserDelete';
 import UserActivation from './pages/UserActivation';
+import PasswordResetConfirm from './pages/PasswordResetConfirm';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="password-reset" element={<PasswordReset />} />
           <Route path="user-delete" element={<UserDelete />} />
           <Route path="user-activate/:uid/:token" element={<UserActivation />} />
+          <Route path="password-reset-confirm/:uid/:token" element={<PasswordResetConfirm />} />
         </Route>
       </Routes>
     </Router>

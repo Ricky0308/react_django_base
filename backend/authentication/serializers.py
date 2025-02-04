@@ -57,7 +57,7 @@ class PasswordResetSerializer(serializers.Serializer):
         user = User.objects.get(email=email)
         token = default_token_generator.make_token(user)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
-        reset_url = f"{settings.WEBPAGE_DOMAIN}/reset-password/{uid}/{token}/"
+        reset_url = f"{settings.WEBPAGE_DOMAIN}/password-reset-confirm/{uid}/{token}/"
         
         send_mail(
             "Password Reset Request",
@@ -75,6 +75,8 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
         try:
             uid = force_str(urlsafe_base64_decode(attrs['uidb64']))
             user = User.objects.get(pk=uid)
+            print("(debug) uid: ", uid)
+            print("(debug) user: ", user)
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             raise serializers.ValidationError("Invalid password reset link.")
 

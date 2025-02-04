@@ -39,6 +39,13 @@ export const authService = {
     });
   },
 
+  passwordResetConfirm: async (uidb64: string, token: string, newPassword: string) => {
+    return baseService.request(API_ENDPOINTS.auth.passwordResetConfirm, {
+      method: 'POST',
+      body: JSON.stringify({ uidb64, token, new_password: newPassword }),
+    });
+  },
+
   logout: async () => {
     return baseService.request(API_ENDPOINTS.auth.logout, {
       method: 'POST',
