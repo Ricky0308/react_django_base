@@ -12,6 +12,7 @@ const Layout: React.FC = () => {
             <li><Link to="/signup">Signup</Link></li>
             <li><Link to="/password-reset">Password Reset</Link></li>
             <li><Link to="/user-delete">User Deletion</Link></li>
+            <li><Link to="/user-list">User List</Link></li>
           </ul>
         </nav>
       </header>
