@@ -290,10 +290,8 @@ class PasswordResetView(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            logger.info("Password reset email sent.")
             return Response({"message": "Password reset email sent."}, status=status.HTTP_200_OK)
         else:
-            logger.warning("Password reset request failed.")
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PasswordResetConfirmView(generics.GenericAPIView):
