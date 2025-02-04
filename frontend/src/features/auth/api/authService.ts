@@ -32,5 +32,18 @@ export const authService = {
     });
   },
 
+  passwordReset: async (email: string) => {
+    return baseService.request(API_ENDPOINTS.auth.passwordReset, {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    });
+  },
+
+  logout: async () => {
+    return baseService.request(API_ENDPOINTS.auth.logout, {
+      method: 'POST',
+    });
+  },
+
   // Add other auth-related API calls
 };

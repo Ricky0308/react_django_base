@@ -5,6 +5,8 @@ export const API_ENDPOINTS = {
     login: `${API_BASE_URL}/auth/token/`,
     refresh: `${API_BASE_URL}/auth/token/refresh/`,
     signup: `${API_BASE_URL}/auth/sign-up/`,
+    passwordReset: `${API_BASE_URL}/auth/password-reset/`,
+    logout: `${API_BASE_URL}/auth/sign-out/`,
   },
   csrf: {
     get: `${API_BASE_URL}/csrf/`,
