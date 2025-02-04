@@ -1,21 +1,31 @@
-import { AuthTest } from './features/auth/components/AuthTest';
-import { UserTest } from './features/user/components/UserTest';
-import { ProfileTest } from './features/profile/components/ProfileTest';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Layout from './Layout';
+import Login from './pages/Login';
+import Logout from './pages/Logout';
+import Signup from './pages/Signup';
+import PasswordReset from './pages/PasswordReset';
+import UserDelete from './pages/UserDelete';
+import UserActivation from './pages/UserActivation';
+import PasswordResetConfirm from './pages/PasswordResetConfirm';
+import UserList from './pages/UserList';
 
 function App() {
   return (
-    <div className="App">
-      <h1>API Testing Dashboard</h1>
-      <div style={{ margin: '20px', padding: '20px', border: '1px solid #ccc' }}>
-        <AuthTest />
-      </div>
-      <div style={{ margin: '20px', padding: '20px', border: '1px solid #ccc' }}>
-        <UserTest />
-      </div>
-      <div style={{ margin: '20px', padding: '20px', border: '1px solid #ccc' }}>
-        <ProfileTest />
-      </div>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route path="login" element={<Login />} />
+          <Route path="logout" element={<Logout />} />
+          <Route path="signup" element={<Signup />} />
+          <Route path="password-reset" element={<PasswordReset />} />
+          <Route path="user-delete" element={<UserDelete />} />
+          <Route path="user-activate/:uid/:token" element={<UserActivation />} />
+          <Route path="password-reset-confirm/:uid/:token" element={<PasswordResetConfirm />} />
+          <Route path="user-list" element={<UserList />} />
+        </Route>
+      </Routes>
+    </Router>
   );
 }
 

@@ -227,5 +227,6 @@ EMAIL_HOST_PASSWORD=env("EMAIL_HOST_PASSWORD")
 # used for expiration time of user activation token for sign up
 PASSWORD_RESET_TIMEOUT = 60 * 60 * 1 # in seconds
 
-# other 
+# web page setting 
 WEBPAGE_DOMAIN = "http://127.0.0.1:5173"
+WEBPAGE_USER_ACTIVATION_URL = WEBPAGE_DOMAIN + "/user-activate"

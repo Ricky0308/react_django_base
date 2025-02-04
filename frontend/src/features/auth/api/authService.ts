@@ -32,5 +32,31 @@ export const authService = {
     });
   },
 
+  passwordReset: async (email: string) => {
+    return baseService.request(API_ENDPOINTS.auth.passwordReset, {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    });
+  },
+
+  passwordResetConfirm: async (uidb64: string, token: string, newPassword: string) => {
+    return baseService.request(API_ENDPOINTS.auth.passwordResetConfirm, {
+      method: 'POST',
+      body: JSON.stringify({ uidb64, token, new_password: newPassword }),
+    });
+  },
+
+  logout: async () => {
+    return baseService.request(API_ENDPOINTS.auth.logout, {
+      method: 'POST',
+    });
+  },
+
+  activateUser: async (uidb64: string, token: string) => {
+    return baseService.request(API_ENDPOINTS.auth.activateUser(uidb64, token), {
+      method: 'GET',
+    });
+  },
+
   // Add other auth-related API calls
 };

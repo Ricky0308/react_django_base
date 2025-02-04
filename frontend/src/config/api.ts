@@ -5,6 +5,10 @@ export const API_ENDPOINTS = {
     login: `${API_BASE_URL}/auth/token/`,
     refresh: `${API_BASE_URL}/auth/token/refresh/`,
     signup: `${API_BASE_URL}/auth/sign-up/`,
+    passwordReset: `${API_BASE_URL}/auth/password-reset/`,
+    passwordResetConfirm: `${API_BASE_URL}/auth/password-reset-confirm/`,
+    logout: `${API_BASE_URL}/auth/sign-out/`,
+    activateUser: (uidb64: string, token: string) => `${API_BASE_URL}/auth/user-activate/${uidb64}/${token}/`,
   },
   csrf: {
     get: `${API_BASE_URL}/csrf/`,
