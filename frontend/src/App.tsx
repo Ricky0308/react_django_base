@@ -6,6 +6,7 @@ import Logout from './pages/Logout';
 import Signup from './pages/Signup';
 import PasswordReset from './pages/PasswordReset';
 import UserDelete from './pages/UserDelete';
+import UserActivation from './pages/UserActivation';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="signup" element={<Signup />} />
           <Route path="password-reset" element={<PasswordReset />} />
           <Route path="user-delete" element={<UserDelete />} />
+          <Route path="user-activate/:uid/:token" element={<UserActivation />} />
         </Route>
       </Routes>
     </Router>

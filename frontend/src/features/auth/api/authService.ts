@@ -45,5 +45,11 @@ export const authService = {
     });
   },
 
+  activateUser: async (uidb64: string, token: string) => {
+    return baseService.request(API_ENDPOINTS.auth.activateUser(uidb64, token), {
+      method: 'GET',
+    });
+  },
+
   // Add other auth-related API calls
 };

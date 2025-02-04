@@ -38,6 +38,7 @@ from django_ratelimit.decorators import ratelimit
 from django.db import transaction
 from rest_framework.permissions import IsAuthenticated
 
+from utils.webpage_urls import get_webpage_user_activation_url
 
 User = get_user_model()
 
@@ -95,14 +96,9 @@ class UserSignUpView(generics.CreateAPIView):
         send_mail(email_subject, email_body, from_email, recipient_list)
 
     def get_activation_url(self, user):
-        domain = settings.WEBPAGE_DOMAIN
         uid = urlsafe_base64_encode(force_bytes(user.id))
         token = default_token_generator.make_token(user)
-        distination = reverse('user-activate', kwargs={'uidb64': uid, 'token': token})
-        
-        print(f"{domain=}")
-        print(f"{distination=}")
-        return domain + reverse('user-activate', kwargs={'uidb64': uid, 'token': token})
+        return get_webpage_user_activation_url(uid, token)
 
 class UserActivationView(APIView):
     authentication_classes = [UserActivationAuthentication]
