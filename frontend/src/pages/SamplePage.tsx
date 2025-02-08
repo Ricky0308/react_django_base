@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { Button } from '@/components/ui/button';
 const SamplePage: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
@@ -7,9 +7,9 @@ const SamplePage: React.FC = () => {
       <p className="text-lg text-gray-700 mb-8">
         This is a sample page styled with Tailwind CSS.
       </p>
-      <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+      <Button>
         Click Me
-      </button>
+      </Button>
     </div>
   );
 };
