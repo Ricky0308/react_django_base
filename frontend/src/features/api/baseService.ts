@@ -1,5 +1,6 @@
 import { fetchCSRFToken } from './csrfTokenManager';
 import { MESSAGES } from '../../utils/messages';
+import { authService } from '../auth/api/authService';
 
 export const baseService = {
   headers: {
@@ -15,11 +16,32 @@ export const baseService = {
       ...options.headers,
     };
 
-    const response = await fetch(url, {
+    let response = await fetch(url, {
       ...options,
       headers,
       credentials: 'include',
     });
+
+    // If 401 is returned due to access token expiration etc.
+    if (response.status === 401) {
+      try {
+        // Refresh token
+        await authService.refresh();
+
+        // Re-request after refresh
+        const refreshedResponse = await fetch(url, {
+          ...options,
+          headers,
+          credentials: 'include',
+        });
+        response = refreshedResponse;
+      } catch (error) {
+        // Add processing such as guiding to logout process when refresh fails
+        // throw new Error('Refresh failed. Please login again.');
+        console.error('Refresh token failed:');
+        throw error;
+      }
+    }
 
     return this.handleResponse(response);
   },
