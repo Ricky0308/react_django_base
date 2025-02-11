@@ -17,7 +17,7 @@ const Logout: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+    <div className="flex justify-center items-center min-h-screen">
       <Card className="max-w-md w-full">
         <CardHeader>
           <CardTitle>Logout</CardTitle>
