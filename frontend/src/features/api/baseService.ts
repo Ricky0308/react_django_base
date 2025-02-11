@@ -1,6 +1,8 @@
 import { fetchCSRFToken } from './csrfTokenManager';
 import { MESSAGES } from '../../utils/messages';
 import { authService } from '../auth/api/authService';
+import { loginSuccess, logout } from '../auth/authSlice';
+import { store } from '../../store';
 
 export const baseService = {
   headers: {
@@ -35,9 +37,14 @@ export const baseService = {
           credentials: 'include',
         });
         response = refreshedResponse;
+        
+        const userInfo = await authService.getUserInfo();
+        store.dispatch(loginSuccess({ id: userInfo.id }));
+
       } catch (error) {
         // Add processing such as guiding to logout process when refresh fails
         // throw new Error('Refresh failed. Please login again.');
+        store.dispatch(logout());
         console.error('Refresh token failed:');
         throw error;
       }

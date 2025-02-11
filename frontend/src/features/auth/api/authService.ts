@@ -1,5 +1,7 @@
 import { API_ENDPOINTS } from '../../../config/api';
 import { baseService } from '../../api/baseService';
+import { loginSuccess, logout } from '../authSlice';
+import { store } from '../../../store';
 
 interface LoginCredentials {
   email: string;
@@ -13,10 +15,17 @@ interface SignUpCredentials {
 
 export const authService = {
   login: async (credentials: LoginCredentials) => {
-    return baseService.request(API_ENDPOINTS.auth.login, {
-      method: 'POST',
-      body: JSON.stringify(credentials),
-    });
+    try {
+      await baseService.request(API_ENDPOINTS.auth.login, {
+        method: 'POST',
+        body: JSON.stringify(credentials),
+      });
+      const userInfo = await authService.getUserInfo();
+      store.dispatch(loginSuccess({ id: userInfo.id }));
+    } catch (error) {
+      store.dispatch(logout());
+      throw error;
+    }
   },
 
   signup: async (credentials: SignUpCredentials) => {
@@ -27,9 +36,16 @@ export const authService = {
   },
 
   refresh: async () => {
-    return baseService.request(API_ENDPOINTS.auth.refresh, {
-      method: 'POST',
-    });
+    try {
+      await baseService.request(API_ENDPOINTS.auth.refresh, {
+        method: 'POST',
+      });
+      const userInfo = await authService.getUserInfo();
+      store.dispatch(loginSuccess({ id: userInfo.id }));
+    } catch (error) {
+      store.dispatch(logout());
+      throw error;
+    }
   },
 
   passwordReset: async (email: string) => {
@@ -47,9 +63,13 @@ export const authService = {
   },
 
   logout: async () => {
-    return baseService.request(API_ENDPOINTS.auth.logout, {
-      method: 'POST',
-    });
+    try {
+      await baseService.request(API_ENDPOINTS.auth.logout, {
+        method: 'POST',
+      });
+    } finally {
+      store.dispatch(logout());
+    }
   },
 
   activateUser: async (uidb64: string, token: string) => {
@@ -63,6 +83,4 @@ export const authService = {
       method: 'GET',
     });
   },
-
-  // Add other auth-related API calls
 };
