@@ -40,6 +40,9 @@ from rest_framework.permissions import IsAuthenticated
 
 from utils.webpage_urls import get_webpage_user_activation_url
 
+from rest_framework.decorators import api_view
+from rest_framework.authentication import TokenAuthentication
+
 User = get_user_model()
 
 
@@ -321,4 +324,8 @@ class UserInfoView(APIView):
 
     def get(self, request):
         user = request.user
-        return Response({"id": str(user.id)})
+        return Response({
+            'id': user.id,
+            'email': user.email,
+            'username': user.username
+        })

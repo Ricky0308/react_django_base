@@ -79,8 +79,13 @@ export const authService = {
   },
 
   getUserInfo: async () => {
-    return baseService.request(API_ENDPOINTS.auth.userInfo, {
+    const response = await baseService.request(API_ENDPOINTS.auth.userInfo, {
       method: 'GET',
     });
+    store.dispatch(loginSuccess({
+      id: response.id,
+      email: response.email,
+      username: response.username,
+    }));
   },
 };

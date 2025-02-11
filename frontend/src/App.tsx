@@ -27,7 +27,7 @@ function App() {
       const fetchUserInfo = async () => {
         try {
           const userInfo = await authService.getUserInfo();
-          dispatch(loginSuccess({ id: userInfo.id }));
+          dispatch(loginSuccess(userInfo));
         } catch (error) {
           dispatch(logout());
           console.error('Failed to fetch user info:', error);
