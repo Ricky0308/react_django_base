@@ -58,5 +58,11 @@ export const authService = {
     });
   },
 
+  getUserInfo: async () => {
+    return baseService.request(API_ENDPOINTS.auth.userInfo, {
+      method: 'GET',
+    });
+  },
+
   // Add other auth-related API calls
 };
