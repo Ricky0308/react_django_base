@@ -26,7 +26,7 @@ const Signup: React.FC = () => {
 
   return (
     <div className="flex justify-center items-center min-h-screen">
-      <Card className="max-w-md w-full">
+      <Card className="w-[350px]">
         <CardHeader>
           <CardTitle>Sign Up</CardTitle>
         </CardHeader>
