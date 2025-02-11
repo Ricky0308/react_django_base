@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { Button } from "./ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
@@ -13,8 +13,21 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu"
 import { Bell, Settings, LogOut} from "lucide-react"
+import { useSelector } from 'react-redux';
+import { RootState } from '../store'; // Adjust the import path as necessary
 
 export function Header() {
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+  const user = useSelector((state: RootState) => state.auth.user);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setIsUserLoggedIn(true);
+    } else {
+      setIsUserLoggedIn(false);
+    }
+  }, [user]);
 
   return (
     <header className="sticky top-0 w-full border-b bg-white z-10">
@@ -58,37 +71,45 @@ export function Header() {
             </Link>
           </nav>
           <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="icon" className="text-gray-600 hover:text-gray-900">
-              <Bell className="h-5 w-5" />
-              <span className="sr-only">Notifications</span>
-            </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src="/placeholder-avatar.jpg" alt="@account" />
-                    <AvatarFallback>RK</AvatarFallback>
-                  </Avatar>
+            {isUserLoggedIn ? (
+              <>
+                <Button variant="ghost" size="icon" className="text-gray-600 hover:text-gray-900">
+                  <Bell className="h-5 w-5" />
+                  <span className="sr-only">Notifications</span>
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">John Doe</p>
-                    <p className="text-xs leading-none text-muted-foreground">john@example.com</p>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src="/placeholder-avatar.jpg" alt="@account" />
+                        <AvatarFallback>RK</AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56" align="end" forceMount>
+                    <DropdownMenuLabel className="font-normal">
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none">John Doe</p>
+                        <p className="text-xs leading-none text-muted-foreground">john@example.com</p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Settings</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Log out</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
+            ) : (
+              <Link to="/login" className="text-gray-600 hover:text-gray-900">
+                Login
+              </Link>
+            )}
           </div>
         </div>
       </div>
