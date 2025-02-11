@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Link } from "react-router-dom"
 import { authService } from "../features/auth/api/authService"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -61,6 +61,9 @@ const Login: React.FC = () => {
                 {error}
               </Alert>
             )}
+            <p className="mt-4 text-center text-gray-700">
+              Don't have an account? <Link to="/signup" className="text-blue-600 hover:underline">Sign up</Link>
+            </p>
           </CardFooter>
         </form>
       </Card>

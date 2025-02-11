@@ -4,6 +4,7 @@ import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { Alert } from '../components/ui/alert';
 import { authService } from '../features/auth/api/authService';
+import { Link } from 'react-router-dom';
 
 const Signup: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -67,6 +68,9 @@ const Signup: React.FC = () => {
               {error}
             </Alert>
           )}
+          <p className="mt-4 text-center text-gray-700">
+            Already have an account? <Link to="/login" className="text-blue-600 hover:underline">Log in</Link>
+          </p>
         </CardContent>
       </Card>
     </div>
