@@ -100,7 +100,7 @@ export function Header() {
                     </DropdownMenuItem>
                     <DropdownMenuItem>
                       <LogOut className="mr-2 h-4 w-4" />
-                      <span>Log out</span>
+                      <Link to="/logout" className="text-gray-600 hover:text-gray-900">Log out</Link>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
