@@ -20,8 +20,9 @@ export const authService = {
         method: 'POST',
         body: JSON.stringify(credentials),
       });
+      // store user info in redux
       const userInfo = await authService.getUserInfo();
-      store.dispatch(loginSuccess({ id: userInfo.id }));
+      store.dispatch(loginSuccess(userInfo));
     } catch (error) {
       store.dispatch(logout());
       throw error;
@@ -41,7 +42,7 @@ export const authService = {
         method: 'POST',
       });
       const userInfo = await authService.getUserInfo();
-      store.dispatch(loginSuccess({ id: userInfo.id }));
+      store.dispatch(loginSuccess(userInfo));
     } catch (error) {
       store.dispatch(logout());
       throw error;
@@ -82,10 +83,6 @@ export const authService = {
     const response = await baseService.request(API_ENDPOINTS.auth.userInfo, {
       method: 'GET',
     });
-    store.dispatch(loginSuccess({
-      id: response.id,
-      email: response.email,
-      username: response.username,
-    }));
+    return response;
   },
 };

@@ -39,7 +39,7 @@ export const baseService = {
         response = refreshedResponse;
         
         const userInfo = await authService.getUserInfo();
-        store.dispatch(loginSuccess({ id: userInfo.id }));
+        store.dispatch(loginSuccess(userInfo));
 
       } catch (error) {
         // Add processing such as guiding to logout process when refresh fails

@@ -20,7 +20,7 @@ const Login: React.FC = () => {
     e.preventDefault()
     try {
       await authService.login({ email, password })
-      navigate("/") // Redirect to dashboard after successful login
+      navigate("/")
     } catch (error) {
       setError("Invalid email or password")
     }
