@@ -1,7 +1,7 @@
 from authentication.views import TokenObtainView, TokenRefresh, PasswordResetView, PasswordResetConfirmView
 from rest_framework.routers import DefaultRouter
 from django.urls import path
-from .views import AuthUserViewSet, UserSignUpView, UserActivationView, SignOutView, UserDeleteView, UserInfoView
+from .views import AuthUserViewSet, UserSignUpView, UserActivationView, SignOutView, UserDeleteView, UserInfoView, EmailChangeView, EmailChangeConfirmView
 from rest_framework.routers import DefaultRouter
 
 
@@ -16,6 +16,8 @@ urlpatterns = [
     path('sign-out/', SignOutView.as_view(), name='sign-out'),
     path('user-delete/', UserDeleteView.as_view(), name='user-delete'),
     path('user-info/', UserInfoView.as_view(), name='user-info'),
+    path('reset-email/', EmailChangeView.as_view(), name='reset-email'),
+    path('reset-email-confirm/<str:uidb64>/<str:token>/', EmailChangeConfirmView.as_view(), name='reset-email-confirm'),
 ]
 
 router = DefaultRouter()

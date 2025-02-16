@@ -21,7 +21,7 @@ from drf_yasg import openapi
 from config.permissions import IsAccessingOwnAccount
 from django.contrib.auth import get_user_model
 
-from.serializers import AuthUserSerializer, UserSignUpSerializer, PasswordResetSerializer, PasswordResetConfirmSerializer
+from.serializers import AuthUserSerializer, UserSignUpSerializer, PasswordResetSerializer, PasswordResetConfirmSerializer, EmailChangeSerializer
 
 from django.utils.encoding import force_bytes, force_str
 from django.utils.html import strip_tags
@@ -42,6 +42,8 @@ from utils.webpage_urls import get_webpage_user_activation_url
 
 from rest_framework.decorators import api_view
 from rest_framework.authentication import TokenAuthentication
+
+from django.utils import timezone
 
 User = get_user_model()
 
@@ -333,3 +335,35 @@ class UserInfoView(APIView):
             'email': user.email,
             'username': user.username
         })
+
+class EmailChangeView(generics.GenericAPIView):
+
+    serializer_class = EmailChangeSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Confirmation email sent."}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class EmailChangeConfirmView(generics.GenericAPIView):
+
+    def get(self, request, uidb64, token):
+        
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+            print("user", user)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            return Response({"message": "Invalid link."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if default_token_generator.check_token(user, token) and user.pending_email_expiration > timezone.now():
+            user.email = user.pending_email
+            user.pending_email = None
+            user.pending_email_expiration = None
+
+            user.save()
+            return Response({"message": "Email updated successfully."}, status=status.HTTP_200_OK)
+        
+        return Response({"message": "Invalid or expired link."}, status=status.HTTP_400_BAD_REQUEST)
