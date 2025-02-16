@@ -40,6 +40,9 @@ from rest_framework.permissions import IsAuthenticated
 
 from utils.webpage_urls import get_webpage_user_activation_url
 
+from rest_framework.decorators import api_view
+from rest_framework.authentication import TokenAuthentication
+
 User = get_user_model()
 
 
@@ -314,4 +317,19 @@ class UserDeleteView(APIView):
     def delete(self, request, *args, **kwargs):
         user = request.user
         user.delete()
-        return Response({"message": "User deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+        response = Response({"message": "User deleted successfully."}, status=status.HTTP_200_OK)
+        # delete all cookies
+        response.delete_cookie('access')
+        response.delete_cookie('refresh')
+        return response
+
+class UserInfoView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        return Response({
+            'id': user.id,
+            'email': user.email,
+            'username': user.username
+        })

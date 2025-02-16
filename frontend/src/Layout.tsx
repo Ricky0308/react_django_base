@@ -1,29 +1,19 @@
 import React from 'react';
 import { Outlet, Link } from 'react-router-dom';
+import { Header } from '@/components/Header';
 
 const Layout: React.FC = () => {
   return (
-    <div>
-      <header>
-        <nav>
-          <ul>
-            <li><Link to="/login">Login</Link></li>
-            <li><Link to="/logout">Logout</Link></li>
-            <li><Link to="/signup">Signup</Link></li>
-            <li><Link to="/password-reset">Password Reset</Link></li>
-            <li><Link to="/user-delete">User Deletion</Link></li>
-            <li><Link to="/user-list">User List</Link></li>
-          </ul>
-        </nav>
-      </header>
-      <main>
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      <main className="flex-grow container mx-auto p-4">
         <Outlet />
       </main>
-      <footer>
+      <footer className="bg-lightblue-500 text-white p-4 text-center">
         {/* Footer content */}
       </footer>
     </div>
   );
 };
 
-export default Layout; 
+export default Layout;

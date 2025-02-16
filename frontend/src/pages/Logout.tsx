@@ -1,24 +1,33 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { authService } from '../features/auth/api/authService';
 
 const Logout: React.FC = () => {
-  const [message, setMessage] = useState('');
+  useEffect(() => {
+    const performLogout = async () => {
+      try {
+        await authService.logout();
+        console.log('Logout successful');
+      } catch (error) {
+        console.error('Logout failed:', error);
+      }
+    };
 
-  const handleLogout = async () => {
-    try {
-      // Assuming there's a logout method in authService
-      await authService.logout();
-      setMessage('Logout successful');
-    } catch (error) {
-      setMessage('Logout failed');
-    }
-  };
+    performLogout();
+  }, []);
 
   return (
-    <div>
-      <h2>Logout Page</h2>
-      <button onClick={handleLogout}>Logout</button>
-      {message && <p>{message}</p>}
+    <div className="flex justify-center items-center min-h-screen">
+      <Card className="max-w-md w-full">
+        <CardHeader>
+          <CardTitle>Logout</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-center text-gray-700">
+            You have been successfully logged out.
+          </p>
+        </CardContent>
+      </Card>
     </div>
   );
 };

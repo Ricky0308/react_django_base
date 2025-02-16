@@ -1,5 +1,7 @@
 import { API_ENDPOINTS } from '../../../config/api';
 import { baseService } from '../../api/baseService';
+import { loginSuccess, logout } from '../authSlice';
+import { store } from '../../../store';
 
 interface LoginCredentials {
   email: string;
@@ -13,10 +15,18 @@ interface SignUpCredentials {
 
 export const authService = {
   login: async (credentials: LoginCredentials) => {
-    return baseService.request(API_ENDPOINTS.auth.login, {
-      method: 'POST',
-      body: JSON.stringify(credentials),
-    });
+    try {
+      await baseService.request(API_ENDPOINTS.auth.login, {
+        method: 'POST',
+        body: JSON.stringify(credentials),
+      });
+      // store user info in redux
+      const userInfo = await authService.getUserInfo();
+      store.dispatch(loginSuccess(userInfo));
+    } catch (error) {
+      store.dispatch(logout());
+      throw error;
+    }
   },
 
   signup: async (credentials: SignUpCredentials) => {
@@ -27,9 +37,20 @@ export const authService = {
   },
 
   refresh: async () => {
-    return baseService.request(API_ENDPOINTS.auth.refresh, {
-      method: 'POST',
-    });
+    try {
+      const response = await fetch(API_ENDPOINTS.auth.refresh, {
+        method: 'POST',
+        credentials: 'include',
+      });
+      if (response.ok) {
+        const userInfo = await authService.getUserInfo();
+        store.dispatch(loginSuccess(userInfo));
+      } else {
+        store.dispatch(logout());
+      }
+    } catch (error) {
+      store.dispatch(logout());
+    }
   },
 
   passwordReset: async (email: string) => {
@@ -47,9 +68,13 @@ export const authService = {
   },
 
   logout: async () => {
-    return baseService.request(API_ENDPOINTS.auth.logout, {
-      method: 'POST',
-    });
+    try {
+      await baseService.request(API_ENDPOINTS.auth.logout, {
+        method: 'POST',
+      });
+    } finally {
+      store.dispatch(logout());
+    }
   },
 
   activateUser: async (uidb64: string, token: string) => {
@@ -58,5 +83,22 @@ export const authService = {
     });
   },
 
-  // Add other auth-related API calls
+  getUserInfo: async () => {
+    const response = await baseService.request(API_ENDPOINTS.auth.userInfo, {
+      method: 'GET',
+    });
+    return response;
+  },
+
+  deleteUser: async () => {
+    try {
+      await baseService.request(API_ENDPOINTS.auth.userDelete, {
+        method: 'DELETE',
+      });
+      store.dispatch(logout());
+    } catch (error) {
+      console.log(error);
+      throw new Error('Failed to delete user');
+    }
+  },
 };
