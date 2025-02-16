@@ -317,7 +317,11 @@ class UserDeleteView(APIView):
     def delete(self, request, *args, **kwargs):
         user = request.user
         user.delete()
-        return Response({"message": "User deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+        response = Response({"message": "User deleted successfully."}, status=status.HTTP_200_OK)
+        # delete all cookies
+        response.delete_cookie('access')
+        response.delete_cookie('refresh')
+        return response
 
 class UserInfoView(APIView):
     permission_classes = [IsAuthenticated]

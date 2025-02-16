@@ -38,14 +38,18 @@ export const authService = {
 
   refresh: async () => {
     try {
-      await baseService.request(API_ENDPOINTS.auth.refresh, {
+      const response = await fetch(API_ENDPOINTS.auth.refresh, {
         method: 'POST',
+        credentials: 'include',
       });
-      const userInfo = await authService.getUserInfo();
-      store.dispatch(loginSuccess(userInfo));
+      if (response.ok) {
+        const userInfo = await authService.getUserInfo();
+        store.dispatch(loginSuccess(userInfo));
+      } else {
+        store.dispatch(logout());
+      }
     } catch (error) {
       store.dispatch(logout());
-      throw error;
     }
   },
 
@@ -84,5 +88,17 @@ export const authService = {
       method: 'GET',
     });
     return response;
+  },
+
+  deleteUser: async () => {
+    try {
+      await baseService.request(API_ENDPOINTS.auth.userDelete, {
+        method: 'DELETE',
+      });
+      store.dispatch(logout());
+    } catch (error) {
+      console.log(error);
+      throw new Error('Failed to delete user');
+    }
   },
 };
