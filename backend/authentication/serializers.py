@@ -130,3 +130,8 @@ class EmailChangeSerializer(serializers.Serializer):
             settings.EMAIL_HOST_USER,
             [old_email],
         )
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username']

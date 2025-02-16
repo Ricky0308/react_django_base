@@ -21,7 +21,7 @@ from drf_yasg import openapi
 from config.permissions import IsAccessingOwnAccount
 from django.contrib.auth import get_user_model
 
-from.serializers import AuthUserSerializer, UserSignUpSerializer, PasswordResetSerializer, PasswordResetConfirmSerializer, EmailChangeSerializer
+from.serializers import AuthUserSerializer, UserSignUpSerializer, PasswordResetSerializer, PasswordResetConfirmSerializer, EmailChangeSerializer, UserUpdateSerializer
 
 from django.utils.encoding import force_bytes, force_str
 from django.utils.html import strip_tags
@@ -367,3 +367,23 @@ class EmailChangeConfirmView(generics.GenericAPIView):
             return Response({"message": "Email updated successfully."}, status=status.HTTP_200_OK)
         
         return Response({"message": "Invalid or expired link."}, status=status.HTTP_400_BAD_REQUEST)
+
+class UserUpdateView(APIView):
+
+    @swagger_auto_schema(
+        request_body=UserUpdateSerializer,
+        responses={
+            200: UserUpdateSerializer,
+            400: 'Invalid input'
+        }
+    )
+    @method_decorator(ratelimit(key='user', rate='2/7d', block=True)) # 2 updates per week
+    def put(self, request, *args, **kwargs):
+        user = get_object_or_404(User, pk=request.user.pk)
+        serializer = UserUpdateSerializer(user, data=request.data, partial=True)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
