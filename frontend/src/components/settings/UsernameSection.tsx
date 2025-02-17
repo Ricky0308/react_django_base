@@ -3,10 +3,13 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store'; // Adjust the import path as necessary
+import { API_ENDPOINTS } from '../../config/api'; // Ensure this path is correct
+import { baseService } from '../../features/api/baseService'; // Import baseService
 
 const UsernameSection: React.FC = () => {
   const userUsername = useSelector((state: RootState) => state.auth.user?.username);
   const [username, setUsername] = useState(userUsername || '');
+  const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (userUsername) {
@@ -14,9 +17,17 @@ const UsernameSection: React.FC = () => {
     }
   }, [userUsername]);
 
-  const handleSave = () => {
-    // Implement save logic here
-    console.log('Username saved:', username);
+  const handleSave = async () => {
+    try {
+      const response = await baseService.request(API_ENDPOINTS.auth.updateUsername, {
+        method: 'PUT',
+        body: JSON.stringify({ username }),
+      });
+
+      setMessage('Username updated successfully.');
+    } catch (error) {
+      setMessage(`Failed to update username: ${error.message}`);
+    }
   };
 
   return (
@@ -30,6 +41,7 @@ const UsernameSection: React.FC = () => {
       <Button onClick={handleSave} className="mt-2">
         Save Username
       </Button>
+      {message && <p className="mt-2 text-sm">{message}</p>}
     </div>
   );
 };
