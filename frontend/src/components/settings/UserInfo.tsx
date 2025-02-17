@@ -1,11 +1,33 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
+import { Button } from '@/components/ui/button';
 import UsernameSection from './UsernameSection';
 import EmailSection from './EmailSection';
 import ProfileTextSection from './ProfileTextSection';
+import { authService } from '../../features/auth/api/authService';
+import { loginSuccess, logout } from '../../features/auth/authSlice';
 
 const UserInfo: React.FC = () => {
+  const dispatch = useDispatch();
+
+  const handleReload = async () => {
+    try {
+      const userInfo = await authService.getUserInfo();
+      dispatch(loginSuccess(userInfo));
+    } catch (error) {
+      dispatch(logout());
+      console.error('Failed to fetch user info:', error);
+    }
+  };
+
   return (
     <div className="space-y-8">
+      <div className="flex justify-between items-center">
+        <h3 className="text-xl font-semibold">User Information</h3>
+        <Button onClick={handleReload} className="ml-4">
+          Reload
+        </Button>
+      </div>
       <UsernameSection />
       <EmailSection />
       <ProfileTextSection />
