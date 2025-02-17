@@ -27,7 +27,7 @@ const UserInfo: React.FC = () => {
         <h3 className="text-xl font-semibold">User Information</h3>
         <Button
           onClick={handleReload}
-          className="ml-4 flex items-center gap-2 bg-blue-100 text-blue-700 hover:bg-blue-200 active:bg-blue-400 transition-colors duration-800"
+          className="ml-4 flex items-center gap-2 bg-blue-100 text-blue-700 hover:bg-blue-200 active:bg-blue-400 transition-colors duration-800 focus:outline-none"
         >
           <RefreshCw className="w-4 h-4" />
           Reload
