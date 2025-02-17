@@ -21,7 +21,7 @@ from drf_yasg import openapi
 from config.permissions import IsAccessingOwnAccount
 from django.contrib.auth import get_user_model
 
-from.serializers import AuthUserSerializer, UserSignUpSerializer, PasswordResetSerializer, PasswordResetConfirmSerializer, EmailChangeSerializer, UserUpdateSerializer
+from.serializers import AuthUserSerializer, UserSignUpSerializer, PasswordResetSerializer, PasswordResetConfirmSerializer, EmailChangeSerializer, UserUpdateSerializer, UserSerializer
 
 from django.utils.encoding import force_bytes, force_str
 from django.utils.html import strip_tags
@@ -330,11 +330,8 @@ class UserInfoView(APIView):
 
     def get(self, request):
         user = request.user
-        return Response({
-            'id': user.id,
-            'email': user.email,
-            'username': user.username
-        })
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
 
 class EmailChangeView(generics.GenericAPIView):
 
