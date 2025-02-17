@@ -1,10 +1,14 @@
 import React from 'react';
+import UsernameSection from './UsernameSection';
+import EmailSection from './EmailSection';
+import ProfileTextSection from './ProfileTextSection';
 
 const UserInfo: React.FC = () => {
   return (
-    <div>
-      <h3 className="text-xl font-semibold mb-4">User Information</h3>
-      <p>Display user information here.</p>
+    <div className="space-y-8">
+      <UsernameSection />
+      <EmailSection />
+      <ProfileTextSection />
     </div>
   );
 };
