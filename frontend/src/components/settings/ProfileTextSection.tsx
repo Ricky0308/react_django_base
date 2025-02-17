@@ -2,10 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store'; // Adjust the import path as necessary
+import { API_ENDPOINTS } from '../../config/api'; // Ensure this path is correct
+import { baseService } from '../../features/api/baseService'; // Import baseService
 
 const ProfileTextSection: React.FC = () => {
   const userProfileText = useSelector((state: RootState) => state.auth.user?.profile?.profile_text);
   const [profileText, setProfileText] = useState(userProfileText || '');
+  const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (userProfileText) {
@@ -13,9 +16,17 @@ const ProfileTextSection: React.FC = () => {
     }
   }, [userProfileText]);
 
-  const handleSave = () => {
-    // Implement save logic here
-    console.log('Profile text saved:', profileText);
+  const handleSave = async () => {
+    try {
+      const response = await baseService.request(API_ENDPOINTS.auth.updateProfileText, {
+        method: 'PUT',
+        body: JSON.stringify({ profile_text: profileText }),
+      });
+
+      setMessage('Profile text updated successfully.');
+    } catch (error) {
+      setMessage(`Failed to update profile text: ${error.message}`);
+    }
   };
 
   return (
@@ -30,6 +41,7 @@ const ProfileTextSection: React.FC = () => {
       <Button onClick={handleSave} className="mt-2">
         Save Profile Text
       </Button>
+      {message && <p className="mt-2 text-sm">{message}</p>}
     </div>
   );
 };

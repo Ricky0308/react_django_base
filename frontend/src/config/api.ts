@@ -13,6 +13,7 @@ export const API_ENDPOINTS = {
     userInfo: `${API_BASE_URL}/auth/user-info/`,
     resetEmail: `${API_BASE_URL}/auth/reset-email/`,
     updateUsername: `${API_BASE_URL}/auth/user-info/update/`,
+    updateProfileText: `${API_BASE_URL}/profile/update/`,
   },
   csrf: {
     get: `${API_BASE_URL}/csrf/`,
