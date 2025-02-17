@@ -38,7 +38,10 @@ const UsernameSection: React.FC = () => {
         onChange={(e) => setUsername(e.target.value)}
         className="mt-1 block w-full"
       />
-      <Button onClick={handleSave} className="mt-2">
+      <Button
+        onClick={handleSave}
+        className="mt-2 flex items-center gap-2 bg-blue-100 text-blue-700 hover:bg-blue-200 active:bg-blue-400 transition-colors duration-800 focus:outline-none"
+      >
         Save Username
       </Button>
       {message && <p className="mt-2 text-sm">{message}</p>}

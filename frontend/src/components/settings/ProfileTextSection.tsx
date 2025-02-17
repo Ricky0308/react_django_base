@@ -38,7 +38,10 @@ const ProfileTextSection: React.FC = () => {
         className="mt-1 block w-full rounded-md border-gray-300 bg-white shadow-sm p-2 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
         rows={4}
       />
-      <Button onClick={handleSave} className="mt-2">
+      <Button
+        onClick={handleSave}
+        className="mt-2 flex items-center gap-2 bg-blue-100 text-blue-700 hover:bg-blue-200 active:bg-blue-400 transition-colors duration-800 focus:outline-none"
+      >
         Save Profile Text
       </Button>
       {message && <p className="mt-2 text-sm">{message}</p>}
