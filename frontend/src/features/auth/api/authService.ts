@@ -101,4 +101,10 @@ export const authService = {
       throw new Error('Failed to delete user');
     }
   },
+
+  confirmEmailReset: async (uidb64: string, token: string) => {
+    return baseService.request(API_ENDPOINTS.auth.resetEmailConfirm(uidb64, token), {
+      method: 'GET',
+    });
+  },
 };
