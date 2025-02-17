@@ -11,6 +11,7 @@ export const API_ENDPOINTS = {
     logout: `${API_BASE_URL}/auth/sign-out/`,
     activateUser: (uidb64: string, token: string) => `${API_BASE_URL}/auth/user-activate/${uidb64}/${token}/`,
     userInfo: `${API_BASE_URL}/auth/user-info/`,
+    resetEmail: `${API_BASE_URL}/auth/reset-email/`,
   },
   csrf: {
     get: `${API_BASE_URL}/csrf/`,
