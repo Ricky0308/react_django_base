@@ -58,7 +58,10 @@ const Signup: React.FC = () => {
                 className="mt-1"
               />
             </div>
-            <Button type="submit" className="w-full">
+            <Button
+              type="submit"
+              className="w-full flex items-center gap-2 bg-blue-100 text-blue-700 hover:bg-blue-200 active:bg-blue-400 transition-colors duration-800 focus:outline-none"
+            >
               Sign Up
             </Button>
           </form>

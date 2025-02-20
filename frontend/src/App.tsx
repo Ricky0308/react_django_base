@@ -15,6 +15,8 @@ import PasswordResetConfirm from './pages/PasswordResetConfirm';
 import UserList from './pages/UserList';
 import SamplePage from './pages/SamplePage';
 import Profile from './pages/Profile';
+import Settings from './pages/Settings';
+import EmailResetConfirm from './pages/EmailResetConfirm';
 
 function App() {
   const dispatch = useDispatch();
@@ -52,6 +54,8 @@ function App() {
           <Route path="user-list" element={<UserList />} />
           <Route path="sample" element={<SamplePage />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="settings" element={<Settings />} />
+          <Route path="reset-email-confirm/:uidb64/:token" element={<EmailResetConfirm />} />
         </Route>
       </Routes>
     </Router>

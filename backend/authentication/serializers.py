@@ -7,6 +7,7 @@ from django.utils.encoding import force_bytes, force_str
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.password_validation import validate_password
+from Profile.models import Profile
 
 User = get_user_model()
 
@@ -90,3 +91,60 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
         user = self.validated_data['user']
         user.set_password(self.validated_data['new_password'])
         user.save()
+
+class EmailChangeSerializer(serializers.Serializer):
+    new_email = serializers.EmailField()
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        user = self.context['request'].user
+        if not user.check_password(data['password']):
+            raise serializers.ValidationError("Incorrect password.")
+        
+        if User.objects.filter(email=data['new_email']).exists():
+            raise serializers.ValidationError("Email is already in use.")
+        
+        return data
+
+    def save(self):
+        user = self.context['request'].user
+        new_email = self.validated_data['new_email']
+        old_email = user.email
+        user.set_pending_email(new_email)
+        
+        token = default_token_generator.make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        confirmation_url = f"{settings.WEBPAGE_DOMAIN}/reset-email-confirm/{uid}/{token}"
+        
+        # Send confirmation email to the new email address
+        send_mail(
+            "Confirm your new email address",
+            f"Please confirm your new email address by clicking the link: {confirmation_url}",
+            settings.EMAIL_HOST_USER,
+            [new_email],
+        )
+        
+        # Send notification email to the old email address
+        send_mail(
+            "Email Change Requested",
+            f"A request to change your email address to {new_email} was made. If you did not make this request, please contact support.",
+            settings.EMAIL_HOST_USER,
+            [old_email],
+        )
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username']
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ['profile_text']  # Add other fields as needed
+
+class UserSerializer(serializers.ModelSerializer):
+    profile = ProfileSerializer(read_only=True)
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'profile']  # Include other user fields as needed

@@ -224,7 +224,10 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = env("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD=env("EMAIL_HOST_PASSWORD")
 
-# used for expiration time of user activation token for sign up
+# PASSWORD_RESET_TIMEOUT is used for 
+# - user activation token
+# - user email change token
+# - user password reset token
 PASSWORD_RESET_TIMEOUT = 60 * 60 * 1 # in seconds
 
 # web page setting 
