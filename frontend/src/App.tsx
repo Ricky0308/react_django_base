@@ -17,6 +17,7 @@ import SamplePage from './pages/SamplePage';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import EmailResetConfirm from './pages/EmailResetConfirm';
+import ProtectedPage from './pages/ProtectedPage';
 
 function App() {
   const dispatch = useDispatch();
@@ -56,6 +57,7 @@ function App() {
           <Route path="profile" element={<Profile />} />
           <Route path="settings" element={<Settings />} />
           <Route path="reset-email-confirm/:uidb64/:token" element={<EmailResetConfirm />} />
+          <Route path="protected" element={<ProtectedPage />} />
         </Route>
       </Routes>
     </Router>
