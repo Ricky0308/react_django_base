@@ -100,29 +100,57 @@ LOGGING = {
         'transaction_id_filter': {
             '()': 'utils.filters.TransactionIDFilter',
         },
+        # category filter
+        'category_common_filter': {
+            '()': 'utils.filters.CategoryFilter',
+            'category': 'COMMON',
+        },
+        'category_debug_filter': {
+            '()': 'utils.filters.CategoryFilter',
+            'category': 'DEBUG',
+        },
+        'category_security_filter': {
+            '()': 'utils.filters.CategoryFilter',
+            'category': 'SECURITY',
+        },
     },
     'formatters': {
         'json': {
             '()': jsonlogger.JsonFormatter,
-            'fmt': '%(asctime)s %(levelname)s %(transaction_id)s %(message)s',
+            'fmt': '%(asctime)s %(levelname)s %(category)s %(transaction_id)s %(message)s',
         },
     },
     'handlers': {
-        'console': {
+        'common': {
             'class': 'logging.StreamHandler',
-            'filters': ['transaction_id_filter'],
+            'filters': ['transaction_id_filter', 'category_common_filter'],
+            'formatter': 'json',
+        },
+        'debug': {
+            'class': 'logging.StreamHandler',
+            'filters': ['transaction_id_filter', 'category_debug_filter'],
+            'formatter': 'json',
+        },
+        'security': {
+            'class': 'logging.StreamHandler',
+            'filters': ['transaction_id_filter', 'category_security_filter'],
             'formatter': 'json',
         },
     },
     'loggers': {
         'common': {
-            'handlers': ['console'],
+            'handlers': ['common'],
             'level': 'INFO',
             'propagate': True,
         },
         'debug': {
-            'handlers': ['console'],
+            'handlers': ['debug'],
             'level': 'DEBUG',
+            'propagate': True,
+        },
+        'security': {
+            'handlers': ['security'],
+            'level': 'INFO',
             'propagate': True,
         },
     },
