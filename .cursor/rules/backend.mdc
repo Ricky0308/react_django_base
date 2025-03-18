@@ -1,7 +1,14 @@
 ---
 description: when modifying or creating backend files
 globs: backend/**/*.py
+alwaysApply: false
 ---
 
 # Logging
-There are several types of loggers, such as `common`, `security`, and `analytics`. When defining a logger instance, consider which type of logger is the most appropriate. You can find logger types at [settings.py](mdc:backend/config/settings.py) `LOGGING["loggers"]`.
+Several types of loggers are available, including common, security, and analytics. When creating a logger instance, choose the most appropriate type based on its purpose. You can find the available lon settings.py under LOGGING["loggers"].
+
+An example code for logger definition is 
+```
+import logging
+logger_security = logging.getLogger("security")
+```
