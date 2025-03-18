@@ -93,6 +93,40 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'transaction_id_filter': {
+            '()': 'utils.filters.TransactionIDFilter',  # adjust "yourapp" accordingly
+        },
+    },
+    'formatters': {
+        'verbose': {
+            'format': '[%(asctime)s] [%(levelname)s] [%(transaction_id)s] %(message)s'
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'filters': ['transaction_id_filter'],
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'common': {
+            'handlers': ['console'],
+            'level': 'INFO',  # or DEBUG for more verbosity
+            'propagate': True,
+        },
+        'debug': {
+            'handlers': ['console'],
+            'level': 'DEBUG',  # or DEBUG for more verbosity
+            'propagate': True,
+        },
+    },
+}
+
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
