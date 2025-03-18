@@ -13,7 +13,7 @@ import os
 from pathlib import Path
 from datetime import timedelta
 import environ
-
+from pythonjsonlogger import jsonlogger
 # get environment variables
 env = environ.Env()
 environ.Env.read_env()
@@ -98,30 +98,31 @@ LOGGING = {
     'disable_existing_loggers': False,
     'filters': {
         'transaction_id_filter': {
-            '()': 'utils.filters.TransactionIDFilter',  # adjust "yourapp" accordingly
+            '()': 'utils.filters.TransactionIDFilter',
         },
     },
     'formatters': {
-        'verbose': {
-            'format': '[%(asctime)s] [%(levelname)s] [%(transaction_id)s] %(message)s'
+        'json': {
+            '()': jsonlogger.JsonFormatter,
+            'fmt': '%(asctime)s %(levelname)s %(transaction_id)s %(message)s',
         },
     },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
             'filters': ['transaction_id_filter'],
-            'formatter': 'verbose',
+            'formatter': 'json',
         },
     },
     'loggers': {
         'common': {
             'handlers': ['console'],
-            'level': 'INFO',  # or DEBUG for more verbosity
+            'level': 'INFO',
             'propagate': True,
         },
         'debug': {
             'handlers': ['console'],
-            'level': 'DEBUG',  # or DEBUG for more verbosity
+            'level': 'DEBUG',
             'propagate': True,
         },
     },
