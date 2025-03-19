@@ -5,6 +5,7 @@ alwaysApply: false
 ---
 
 # Logging
+## logger category
 Several types of loggers are available, including common, security, and analytics. When creating a logger instance, choose the most appropriate type based on its purpose. You can find the available lon settings.py under LOGGING["loggers"].
 
 An example code for logger definition is 
@@ -12,3 +13,10 @@ An example code for logger definition is
 import logging
 logger_security = logging.getLogger("security")
 ```
+
+## logging format
+Logs must be in JSON format with the main log text stored under the `"message"` key. To include any additional context, pass a serializable dictionary using the `extra` argument. For example:
+```python
+logger.info("Hello, world!", extra={"additional": "additional_value"})
+```
+This approach ensures that all log entries remain structured and easily parsable.
