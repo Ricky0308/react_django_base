@@ -13,7 +13,7 @@ import os
 from pathlib import Path
 from datetime import timedelta
 import environ
-
+from pythonjsonlogger import jsonlogger
 # get environment variables
 env = environ.Env()
 environ.Env.read_env()
@@ -70,6 +70,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'middlewares.transaction_id.TransactionIDMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -91,6 +92,69 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'transaction_id_filter': {
+            '()': 'utils.filters.TransactionIDFilter',
+        },
+        # category filter
+        'category_common_filter': {
+            '()': 'utils.filters.CategoryFilter',
+            'category': 'COMMON',
+        },
+        'category_debug_filter': {
+            '()': 'utils.filters.CategoryFilter',
+            'category': 'DEBUG',
+        },
+        'category_security_filter': {
+            '()': 'utils.filters.CategoryFilter',
+            'category': 'SECURITY',
+        },
+    },
+    'formatters': {
+        'json': {
+            '()': jsonlogger.JsonFormatter,
+            'fmt': '%(asctime)s %(levelname)s %(category)s %(transaction_id)s %(message)s',
+        },
+    },
+    'handlers': {
+        'common': {
+            'class': 'logging.StreamHandler',
+            'filters': ['transaction_id_filter', 'category_common_filter'],
+            'formatter': 'json',
+        },
+        'debug': {
+            'class': 'logging.StreamHandler',
+            'filters': ['transaction_id_filter', 'category_debug_filter'],
+            'formatter': 'json',
+        },
+        'security': {
+            'class': 'logging.StreamHandler',
+            'filters': ['transaction_id_filter', 'category_security_filter'],
+            'formatter': 'json',
+        },
+    },
+    'loggers': {
+        'common': {
+            'handlers': ['common'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'debug': {
+            'handlers': ['debug'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'security': {
+            'handlers': ['security'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}
 
 
 # Database

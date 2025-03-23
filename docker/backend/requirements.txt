@@ -8,6 +8,7 @@ django_ratelimit
 django-ipware==5.0.0
 setuptools
 zxcvbn
+python-json-logger
 
 # redis
 redis[hiredis]
