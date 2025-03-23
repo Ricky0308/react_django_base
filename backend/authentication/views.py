@@ -13,6 +13,10 @@ from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
+import logging
+
+# Initialize security logger
+logger_security = logging.getLogger("security")
 
 from drf_yasg.utils import swagger_auto_schema
 from django.utils.decorators import method_decorator
@@ -70,11 +74,37 @@ class UserSignUpView(generics.CreateAPIView):
     )
     @method_decorator(ratelimit(key='ip', rate='10/m', block=True))
     def post(self, request, *args, **kwargs):
+        client_ip = request.META.get('REMOTE_ADDR', 'unknown')
+        logger_security.info("User registration attempt", extra={
+            "ip": client_ip,
+            "email": request.data.get('email', '[no email]')
+        })
+        
         serializer = UserSignUpSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = self.perform_create(serializer)
-        self.send_user_activation_email(user)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if not serializer.is_valid():
+            logger_security.warning("Failed user registration", extra={
+                "ip": client_ip,
+                "email": request.data.get('email', '[no email]'),
+                "reason": "validation error"
+            })
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+        try:
+            user = self.perform_create(serializer)
+            self.send_user_activation_email(user)
+            logger_security.info("User registered successfully", extra={
+                "user_id": user.id,
+                "email": user.email,
+                "ip": client_ip
+            })
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            logger_security.error("Exception during user registration", extra={
+                "email": request.data.get('email', '[no email]'),
+                "ip": client_ip,
+                "error": str(e)
+            })
+            raise
 
     @transaction.atomic
     def perform_create(self, serializer):
@@ -109,15 +139,43 @@ class UserActivationView(APIView):
     authentication_classes = [UserActivationAuthentication]
 
     def get(self, request, uidb64, token):
-        decoded_uid = urlsafe_base64_decode(uidb64)
-        id = force_str(decoded_uid)
-        user = User.objects.get(id=id)
-        print("token validation")
-        if self.validate_activation_token(user, token) and not user.is_active:
-            user.is_active = True 
-            user.save()
-            return Response({"message" : "User activated!", "success" : True})
-        return Response({"message":"Something went wrong", "success" : False})
+        client_ip = request.META.get('REMOTE_ADDR', 'unknown')
+        logger_security.info("Account activation attempt", extra={
+            "uidb64": uidb64,
+            "ip": client_ip
+        })
+        
+        try:
+            decoded_uid = urlsafe_base64_decode(uidb64)
+            id = force_str(decoded_uid)
+            user = User.objects.get(id=id)
+            
+            validation_result = self.validate_activation_token(user, token) and not user.is_active
+            if validation_result:
+                user.is_active = True 
+                user.save()
+                logger_security.info("User activated successfully", extra={
+                    "user_id": user.id,
+                    "email": user.email,
+                    "ip": client_ip
+                })
+                return Response({"message" : "User activated!", "success" : True})
+            else:
+                reason = "invalid token" if not self.validate_activation_token(user, token) else "already active"
+                logger_security.warning("Failed account activation", extra={
+                    "user_id": user.id,
+                    "email": user.email,
+                    "reason": reason,
+                    "ip": client_ip
+                })
+                return Response({"message":"Something went wrong", "success" : False})
+        except Exception as e:
+            logger_security.error("Exception during account activation", extra={
+                "uidb64": uidb64,
+                "ip": client_ip,
+                "error": str(e)
+            })
+            return Response({"message":"Something went wrong", "success" : False})
     
     def validate_activation_token(self, user, token):
         token_generator = default_token_generator
@@ -209,11 +267,38 @@ class TokenObtainView(jwt_views.TokenObtainPairView):
         self.serializer_class = ExtendedTokenObtainSerializer
     
     def post(self, request, *args, **kwargs):
+        client_ip = request.META.get('REMOTE_ADDR', 'unknown')
+        email = request.data.get('email', '[no email]')
+        logger_security.info("Login attempt", extra={
+            "email": email,
+            "ip": client_ip
+        })
+        
         serializer = self.get_serializer(data=request.data)
         try:
             serializer.is_valid(raise_exception=True)
         except jwt_exp.TokenError as e:
+            logger_security.warning("Token error during login attempt", extra={
+                "email": email,
+                "ip": client_ip,
+                "error_type": type(e).__name__
+            })
             raise jwt_exp.InvalidToken(e.args[0])
+        except exceptions.AuthenticationFailed as e:
+            logger_security.warning("Authentication failed", extra={
+                "email": email,
+                "ip": client_ip,
+                "error_type": type(e).__name__
+            })
+            raise
+
+        # Log successful login
+        user_id = getattr(serializer.user, 'id', '[unknown]')
+        logger_security.info("Successful login", extra={
+            "user_id": user_id,
+            "email": email,
+            "ip": client_ip
+        })
 
         res = Response({"message": "Login successful", "success": True}, status=status.HTTP_200_OK)
 
@@ -222,7 +307,6 @@ class TokenObtainView(jwt_views.TokenObtainPairView):
         except Exception as e:
             print(e)
 
-        print("validated_data", serializer.validated_data)
         # Set the Token in the Cookie header
         res.set_cookie(
             "access",
@@ -250,16 +334,32 @@ class TokenRefresh(APIView):
     permission_classes = [AllowAny] # accessible even after access token expires
     
     def post(self, request, *args, **kwargs):
+        client_ip = request.META.get('REMOTE_ADDR', 'unknown')
+        logger_security.info("Token refresh attempt", extra={
+            "ip": client_ip
+        })
+        
         if not request.COOKIES.get("refresh"):
+            logger_security.warning("Token refresh failed - refresh token not found in cookies", extra={
+                "ip": client_ip
+            })
             raise Exception("refresh token is not set")
+            
         data = {"refresh":request.COOKIES["refresh"]}
         serializer = TokenRefreshSerializer(data=data)
 
         try:
             serializer.is_valid(raise_exception=True)
         except jwt_exp.TokenError as e:
+            logger_security.warning("Invalid refresh token used", extra={
+                "ip": client_ip,
+                "error_type": type(e).__name__
+            })
             raise jwt_exp.InvalidToken(e.args[0])
 
+        logger_security.info("Token refresh successful", extra={
+            "ip": client_ip
+        })
         response = Response({"message": "Token refresh successful", "success": True}, status=status.HTTP_200_OK)
         # delete existing cookies
         response.delete_cookie("access")
@@ -288,11 +388,26 @@ class PasswordResetView(generics.GenericAPIView):
 
     @method_decorator(ratelimit(key='ip', rate='5/m', block=True))
     def post(self, request, *args, **kwargs):
+        client_ip = request.META.get('REMOTE_ADDR', 'unknown')
+        email = request.data.get('email', '[no email]')
+        logger_security.info("Password reset requested", extra={
+            "email": email,
+            "ip": client_ip
+        })
+        
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            logger_security.info("Password reset email sent", extra={
+                "email": email,
+                "ip": client_ip
+            })
             return Response({"message": "Password reset email sent."}, status=status.HTTP_200_OK)
         else:
+            logger_security.warning("Invalid password reset request", extra={
+                "email": email,
+                "ip": client_ip
+            })
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PasswordResetConfirmView(generics.GenericAPIView):
@@ -301,13 +416,39 @@ class PasswordResetConfirmView(generics.GenericAPIView):
 
     @method_decorator(ratelimit(key='ip', rate='5/m', block=True))
     def post(self, request, *args, **kwargs):
+        client_ip = request.META.get('REMOTE_ADDR', 'unknown')
+        uidb64 = request.data.get('uidb64', '[no uid]')
+        logger_security.info("Password reset confirmation attempt", extra={
+            "uidb64": uidb64,
+            "ip": client_ip
+        })
+        
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response({"message": "Password has been reset successfully."}, status=status.HTTP_200_OK)
+        try:
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            logger_security.info("Password reset successfully completed", extra={
+                "uidb64": uidb64,
+                "ip": client_ip
+            })
+            return Response({"message": "Password has been reset successfully."}, status=status.HTTP_200_OK)
+        except Exception as e:
+            logger_security.warning("Password reset confirmation failed", extra={
+                "uidb64": uidb64,
+                "ip": client_ip,
+                "error": str(e)
+            })
+            raise
 
 class SignOutView(APIView):
     def post(self, request):
+        client_ip = request.META.get('REMOTE_ADDR', 'unknown')
+        user_id = getattr(request.user, 'id', '[unknown]')
+        logger_security.info("User sign-out", extra={
+            "user_id": user_id,
+            "ip": client_ip
+        })
+        
         response = Response({"message": "Successfully signed out."}, status=status.HTTP_200_OK)
         response.delete_cookie('access')  # Assuming JWT token is stored in a cookie named 'access'
         response.delete_cookie('refresh')  # If you have a refresh token
@@ -317,19 +458,49 @@ class UserDeleteView(APIView):
     permission_classes = [IsAuthenticated]
 
     def delete(self, request, *args, **kwargs):
+        client_ip = request.META.get('REMOTE_ADDR', 'unknown')
         user = request.user
-        user.delete()
-        response = Response({"message": "User deleted successfully."}, status=status.HTTP_200_OK)
-        # delete all cookies
-        response.delete_cookie('access')
-        response.delete_cookie('refresh')
-        return response
+        user_id = user.id
+        email = user.email
+        
+        logger_security.warning("Account deletion initiated", extra={
+            "user_id": user_id,
+            "email": email,
+            "ip": client_ip
+        })
+        
+        try:
+            user.delete()
+            logger_security.warning("Account successfully deleted", extra={
+                "user_id": user_id,
+                "email": email,
+                "ip": client_ip
+            })
+            response = Response({"message": "User deleted successfully."}, status=status.HTTP_200_OK)
+            # delete all cookies
+            response.delete_cookie('access')
+            response.delete_cookie('refresh')
+            return response
+        except Exception as e:
+            logger_security.error("Account deletion failed", extra={
+                "user_id": user_id,
+                "email": email,
+                "ip": client_ip,
+                "error": str(e)
+            })
+            raise
 
 class UserInfoView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
+        client_ip = request.META.get('REMOTE_ADDR', 'unknown')
         user = request.user
+        logger_security.info("User info accessed", extra={
+            "user_id": user.id,
+            "ip": client_ip
+        })
+        
         serializer = UserSerializer(user)
         return Response(serializer.data)
 
@@ -338,32 +509,71 @@ class EmailChangeView(generics.GenericAPIView):
     serializer_class = EmailChangeSerializer
 
     def post(self, request):
+        client_ip = request.META.get('REMOTE_ADDR', 'unknown')
+        user_id = request.user.id
+        new_email = request.data.get('email', '[no email]')
+        logger_security.info("Email change requested", extra={
+            "user_id": user_id,
+            "new_email": new_email,
+            "ip": client_ip
+        })
+        
         serializer = self.get_serializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
+            logger_security.info("Email change confirmation sent", extra={
+                "user_id": user_id,
+                "new_email": new_email,
+                "ip": client_ip
+            })
             return Response({"message": "Confirmation email sent."}, status=status.HTTP_200_OK)
+        
+        logger_security.warning("Invalid email change request", extra={
+            "user_id": user_id,
+            "new_email": new_email,
+            "ip": client_ip
+        })
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class EmailChangeConfirmView(generics.GenericAPIView):
 
     def get(self, request, uidb64, token):
+        client_ip = request.META.get('REMOTE_ADDR', 'unknown')
+        logger_security.info("Email change confirmation attempt", extra={
+            "uidb64": uidb64,
+            "ip": client_ip
+        })
         
         try:
             uid = force_str(urlsafe_base64_decode(uidb64))
             user = User.objects.get(pk=uid)
-            print("user", user)
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            
+            if default_token_generator.check_token(user, token) and user.pending_email_expiration > timezone.now():
+                user.email = user.pending_email
+                user.pending_email = None
+                user.pending_email_expiration = None
+
+                user.save()
+                logger_security.info("Email successfully changed", extra={
+                    "user_id": user.id,
+                    "new_email": user.email,
+                    "ip": client_ip
+                })
+                return Response({"message": "Email updated successfully."}, status=status.HTTP_200_OK)
+            
+            logger_security.warning("Invalid or expired email change token", extra={
+                "user_id": user.id,
+                "ip": client_ip
+            })
+            return Response({"message": "Invalid or expired link."}, status=status.HTTP_400_BAD_REQUEST)
+            
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist) as e:
+            logger_security.warning("Invalid email change link", extra={
+                "uidb64": uidb64,
+                "ip": client_ip,
+                "error": str(e)
+            })
             return Response({"message": "Invalid link."}, status=status.HTTP_400_BAD_REQUEST)
-
-        if default_token_generator.check_token(user, token) and user.pending_email_expiration > timezone.now():
-            user.email = user.pending_email
-            user.pending_email = None
-            user.pending_email_expiration = None
-
-            user.save()
-            return Response({"message": "Email updated successfully."}, status=status.HTTP_200_OK)
-        
-        return Response({"message": "Invalid or expired link."}, status=status.HTTP_400_BAD_REQUEST)
 
 class UserUpdateView(APIView):
 
@@ -376,11 +586,28 @@ class UserUpdateView(APIView):
     )
     @method_decorator(ratelimit(key='user', rate='2/7d', block=True)) # 2 updates per week
     def put(self, request, *args, **kwargs):
+        client_ip = request.META.get('REMOTE_ADDR', 'unknown')
         user = get_object_or_404(User, pk=request.user.pk)
+        user_id = user.id
+        
+        logger_security.info("Account update requested", extra={
+            "user_id": user_id,
+            "ip": client_ip
+        })
+        
         serializer = UserUpdateSerializer(user, data=request.data, partial=True)
         
         if serializer.is_valid():
             serializer.save()
+            logger_security.info("Account successfully updated", extra={
+                "user_id": user_id,
+                "ip": client_ip,
+                "updated_fields": list(request.data.keys())
+            })
             return Response(serializer.data, status=status.HTTP_200_OK)
         
+        logger_security.warning("Invalid account update attempt", extra={
+            "user_id": user_id,
+            "ip": client_ip
+        })
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
