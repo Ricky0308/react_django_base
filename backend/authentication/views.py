@@ -104,7 +104,10 @@ class UserSignUpView(generics.CreateAPIView):
                 "ip": client_ip,
                 "error": str(e)
             })
-            raise
+            return Response(
+                {"message": "An error occurred during registration.", "error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     @transaction.atomic
     def perform_create(self, serializer):
@@ -276,21 +279,50 @@ class TokenObtainView(jwt_views.TokenObtainPairView):
         
         serializer = self.get_serializer(data=request.data)
         try:
-            serializer.is_valid(raise_exception=True)
+            serializer.is_valid(raise_exception=False)
+            
+            if not serializer.is_valid():
+                logger_security.warning("Authentication failed", extra={
+                    "email": email,
+                    "ip": client_ip,
+                    "error_type": "Validation error"
+                })
+                return Response(
+                    {"message": "Invalid login credentials", "errors": serializer.errors},
+                    status=status.HTTP_401_UNAUTHORIZED
+                )
+                
         except jwt_exp.TokenError as e:
             logger_security.warning("Token error during login attempt", extra={
                 "email": email,
                 "ip": client_ip,
                 "error_type": type(e).__name__
             })
-            raise jwt_exp.InvalidToken(e.args[0])
+            return Response(
+                {"message": "Token error occurred", "error": e.args[0]},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
         except exceptions.AuthenticationFailed as e:
             logger_security.warning("Authentication failed", extra={
                 "email": email,
                 "ip": client_ip,
                 "error_type": type(e).__name__
             })
-            raise
+            return Response(
+                {"message": "Authentication failed", "error": str(e)},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        except Exception as e:
+            logger_security.error("Unexpected error during login", extra={
+                "email": email,
+                "ip": client_ip,
+                "error_type": type(e).__name__,
+                "error": str(e)
+            })
+            return Response(
+                {"message": "Login failed due to an unexpected error"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
         # Log successful login
         user_id = getattr(serializer.user, 'id', '[unknown]')
@@ -305,7 +337,11 @@ class TokenObtainView(jwt_views.TokenObtainPairView):
         try:
             res.delete_cookie("access_token")
         except Exception as e:
-            print(e)
+            # Log but continue
+            logger_security.warning("Error deleting cookie", extra={
+                "error": str(e),
+                "ip": client_ip
+            })
 
         # Set the Token in the Cookie header
         res.set_cookie(
@@ -343,19 +379,46 @@ class TokenRefresh(APIView):
             logger_security.warning("Token refresh failed - refresh token not found in cookies", extra={
                 "ip": client_ip
             })
-            raise Exception("refresh token is not set")
+            return Response(
+                {"message": "Refresh token is not set", "success": False},
+                status=status.HTTP_400_BAD_REQUEST
+            )
             
         data = {"refresh":request.COOKIES["refresh"]}
         serializer = TokenRefreshSerializer(data=data)
 
         try:
-            serializer.is_valid(raise_exception=True)
+            serializer.is_valid(raise_exception=False)
+            
+            if not serializer.is_valid():
+                logger_security.warning("Invalid refresh token format", extra={
+                    "ip": client_ip,
+                    "errors": serializer.errors
+                })
+                return Response(
+                    {"message": "Invalid refresh token format", "errors": serializer.errors, "success": False},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+                
         except jwt_exp.TokenError as e:
             logger_security.warning("Invalid refresh token used", extra={
                 "ip": client_ip,
                 "error_type": type(e).__name__
             })
-            raise jwt_exp.InvalidToken(e.args[0])
+            return Response(
+                {"message": "Invalid refresh token", "error": e.args[0], "success": False},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        except Exception as e:
+            logger_security.error("Unexpected error during token refresh", extra={
+                "ip": client_ip,
+                "error_type": type(e).__name__,
+                "error": str(e)
+            })
+            return Response(
+                {"message": "Token refresh failed", "success": False},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
         logger_security.info("Token refresh successful", extra={
             "ip": client_ip
@@ -425,7 +488,17 @@ class PasswordResetConfirmView(generics.GenericAPIView):
         
         serializer = self.get_serializer(data=request.data)
         try:
-            serializer.is_valid(raise_exception=True)
+            if not serializer.is_valid():
+                logger_security.warning("Password reset confirmation failed - validation error", extra={
+                    "uidb64": uidb64,
+                    "ip": client_ip,
+                    "errors": serializer.errors
+                })
+                return Response(
+                    {"message": "Invalid password reset data", "errors": serializer.errors},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+                
             serializer.save()
             logger_security.info("Password reset successfully completed", extra={
                 "uidb64": uidb64,
@@ -438,7 +511,10 @@ class PasswordResetConfirmView(generics.GenericAPIView):
                 "ip": client_ip,
                 "error": str(e)
             })
-            raise
+            return Response(
+                {"message": "Password reset failed", "error": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
 class SignOutView(APIView):
     def post(self, request):
@@ -488,7 +564,10 @@ class UserDeleteView(APIView):
                 "ip": client_ip,
                 "error": str(e)
             })
-            raise
+            return Response(
+                {"message": "User deletion failed", "error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 class UserInfoView(APIView):
     permission_classes = [IsAuthenticated]
