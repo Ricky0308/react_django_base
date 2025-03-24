@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { RootState } from '../store'; // Adjust the import path as necessary
 import { loginSuccess, logout } from '../features/auth/authSlice';
-import { authService } from '../features/auth/api/authService';
+import { authService } from '../features/api/authService';
 
 const useAuthRedirect = () => {
   const navigate = useNavigate();

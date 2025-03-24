@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { authService } from '../features/auth/api/authService';
+import { authService } from '../features/api/authService';
 
 const Logout: React.FC = () => {
   useEffect(() => {

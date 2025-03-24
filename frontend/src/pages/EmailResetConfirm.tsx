@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Alert } from '../components/ui/alert';
-import { authService } from '../features/auth/api/authService';
+import { authService } from '../features/api/authService';
 
 const EmailResetConfirm: React.FC = () => {
   const { uidb64, token } = useParams<{ uidb64: string; token: string }>();

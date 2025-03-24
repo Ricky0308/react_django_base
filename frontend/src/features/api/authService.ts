@@ -1,7 +1,7 @@
-import { API_ENDPOINTS } from '../../../config/api';
-import { baseService } from '../../api/baseService';
-import { loginSuccess, logout } from '../authSlice';
-import { store } from '../../../store';
+import { API_ENDPOINTS } from '../../config/api';
+import { baseService } from './baseService';
+import { loginSuccess, logout } from '../../features/auth/authSlice';
+import { store } from '../../store';
 
 interface LoginCredentials {
   email: string;

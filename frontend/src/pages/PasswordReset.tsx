@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { Alert } from '../components/ui/alert';
-import { authService } from '../features/auth/api/authService';
+import { authService } from '../features/api/authService';
 
 const PasswordReset: React.FC = () => {
   const [email, setEmail] = useState('');
