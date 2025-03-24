@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { userService } from '../features/user/api/userService';
+import { userService } from '../features/api/userService';
 
 const UserList: React.FC = () => {
   const [users, setUsers] = useState<any[]>([]);
