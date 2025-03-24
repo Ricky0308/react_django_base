@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { loginSuccess, logout } from './features/auth/authSlice';
-import { authService } from './features/auth/api/authService';
+import { authService } from './features/api/authService';
 import Layout from './Layout';
 import Login from './pages/Login';
 import Logout from './pages/Logout';

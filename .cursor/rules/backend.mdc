@@ -3,6 +3,46 @@ description: when modifying or creating backend files
 globs: backend/**/*.py
 alwaysApply: false
 ---
+# Project Configuration
+
+## Confidential Variables Management
+- **Storing Sensitive Data in .env:**  
+  All confidential variables (e.g., `SECRET_KEY`, database credentials, email credentials) must be stored in the `.env` file rather than hardcoded in the repository.  
+  **Example Usage:**  
+  ```python
+  SECRET_KEY = env("SECRET_KEY")
+  DB_NAME = env("DB_NAME")
+  DB_USER = env("DB_USER")
+  DB_PASS = env("DB_PASS")
+  EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+  EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+  ```
+- **Accessing Variables:**  
+  Use the provided `env` function from the `environ` library to read these values in `settings.py` and other configuration files. This approach ensures that sensitive data remains outside of your source code.
+
+## Custom CSRF Protection
+- **Custom Implementation:**  
+  Our project uses a custom CSRF protection mechanism instead of Django’s default. The related logic is implemented in:
+  - `backend/csrf/views.py`
+  - `backend/middlewares/csrf_protection.py`
+- **Configuration:**  
+  CSRF-related settings (such as `CSRF_COOKIE_NAME`, `CSRF_HEADER_NAME`, `CSRF_COOKIE_SECURE`, `CSRF_COOKIE_SAMESITE`, and `CSRF_COOKIE_AGE`) are defined in `settings.py`.  
+- **Modification Guidelines:**  
+  When updating CSRF functionality, ensure that:
+  - The configuration in `settings.py` remains consistent with the custom implementation.
+  - Any changes to CSRF behavior are reflected in both the views and middleware (i.e., in the files mentioned above).
+
+## Custom User Model
+- **Custom User Model Specification:**  
+  The project uses a custom user model defined in `authentication.User`.  
+- **UUID as Primary Key:**  
+  The primary key (`user_id`) for the user model is a UUID field instead of the default integer.  
+- **Implications for Development:**  
+  - **User Lookup & Serialization:** Always treat the user identifier as a UUID. When performing lookups or logging, convert the UUID to a string if necessary.
+  - **Integration:** Ensure that any new functionality that interacts with the user model respects the UUID format for `user_id`.
+  - **Database Migrations:** Be mindful of the UUID configuration when making database schema changes or writing queries involving the user model.
+
+
 
 # Logging
 ## logger category
@@ -19,4 +59,27 @@ Logs must be in JSON format with the main log text stored under the `"message"` 
 ```python
 logger.info("Hello, world!", extra={"additional": "additional_value"})
 ```
+
 This approach ensures that all log entries remain structured and easily parsable.
+
+
+
+# View
+When modifying views.py, follow rules below.
+## Error ahndling
+Avoid Raising Exceptions for Predictable Errors:
+Instead of using raise exception calls for predictable conditions (such as missing cookies, invalid user input, or token errors), capture these error cases and report them via HTTP responses.
+
+For client-side errors, use 4xx status codes (e.g., 400 for validation errors, 401 for authentication issues).
+For server-side or unexpected errors, use a 500 status code, but ensure that detailed error information is logged securely without exposing sensitive data.
+
+## Rate limiting
+Protect Endpoints with ratelimit:
+Apply the `@method_decorator(ratelimit)` decorator with appropriate parameters (e.g., specifying the key, rate, and block behavior) to limit the frequency of requests on critical endpoints. This helps prevent abuse and maintains service stability.
+
+## API documentation
+Always Use swagger_auto_schema:
+Use the `@swagger_auto_schema` decorator for each endpoint to ensure comprehensive API documentation. This provides a clear, standardized view of each endpoint’s purpose, expected inputs, and responses
+
+
+

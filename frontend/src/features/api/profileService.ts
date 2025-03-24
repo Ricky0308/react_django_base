@@ -1,5 +1,5 @@
-import { API_ENDPOINTS } from '../../../config/api';
-import { baseService } from '../../api/baseService';
+import { API_ENDPOINTS } from '../../config/api';
+import { baseService } from './baseService';
 
 export const profileService = {
   hello: async () => {

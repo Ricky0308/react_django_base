@@ -1,6 +1,6 @@
 import { fetchCSRFToken } from './csrfTokenManager';
 import { MESSAGES } from '../../utils/messages';
-import { authService } from '../auth/api/authService';
+import { authService } from '../api/authService';
 import { loginSuccess, logout } from '../auth/authSlice';
 import { store } from '../../store';
 import { API_ENDPOINTS } from '../../config/api';

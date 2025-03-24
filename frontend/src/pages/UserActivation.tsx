@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { authService } from '../features/auth/api/authService';
+import { authService } from '../features/api/authService';
 import { Link } from 'react-router-dom';
 const UserActivation: React.FC = () => {
   const { uid, token } = useParams<{ uid: string; token: string }>();

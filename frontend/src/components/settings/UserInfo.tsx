@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import UsernameSection from './UsernameSection';
 import EmailSection from './EmailSection';
 import ProfileTextSection from './ProfileTextSection';
-import { authService } from '../../features/auth/api/authService';
+import { authService } from '../../features/api/authService';
 import { loginSuccess, logout } from '../../features/auth/authSlice';
 import { RefreshCw } from 'lucide-react';
 
