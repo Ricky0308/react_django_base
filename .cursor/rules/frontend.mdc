@@ -1,0 +1,78 @@
+---
+description: when modifying or creating frontend files
+globs: frontend/**/*.ts, frontend/**/*.tsx, frontend/**/*.js
+alwaysApply: false
+---
+## Project Configuration
+- **Frameworks & Tools**: Built with **React (v18.3.1)** and **TypeScript** using **Vite (v6.0.5)**.  
+- **TypeScript Strict Mode**: Strict mode is enabled.  
+- **UI Library**: Uses [shadcn/ui](https://github.com/shadcn/ui) style components (e.g., `Button`, `Card`, `Avatar`), located in `frontend/src/components/ui`.  
+
+---
+
+## Folder Structure
+- A feature-based architecture with top-level directories for:
+  - `features/`  
+  - `components/`  
+  - `pages/`  
+  - `hooks/`  
+
+### Features
+- Each folder under `frontend/src/features/` contains files for a specific functionality (e.g. `auth`, `user`).
+  - For example, `features/auth/` holds `authSlice.ts` to manage user authentication state.
+- API-related files reside under `features/api/`.
+- API URLs are centralized at `src/config/api.ts`.
+
+### Components
+- `frontend/src/components/` contains reusable UI elements.
+- Components are grouped by usage. For example, `components/settings/` holds UI elements used on the Settings page.
+
+### Pages
+- The `pages` folder contains route-specific components.
+
+### Hooks
+- The `hooks` folder contains custom React hooks that can be shared across the project.
+
+---
+
+## State Management
+- **Redux Toolkit** is used for global state management.
+
+### Authentication State
+- Managed by a Redux slice in `frontend/src/features/auth/authSlice`.
+- A local storage middleware (`frontend/src/middleware/localStorageMiddleware.ts`) persists auth state.  
+- Whenever a user logs in or a token refresh occurs (via `request` in `frontend/src/features/api/baseService.ts`), Redux user info is updated.
+- The local storage middleware stores the updated user info to `localStorage`.
+
+---
+
+## API Integration
+- The backend API domain is defined in `frontend/src/config/api.ts`.
+- All endpoints are also centralized in `frontend/src/config/api.ts`.
+- **Service Pattern**: For example, `features/api/authService` handles auth endpoints.
+- All API calls must use the `request` method from `frontend/src/features/api/baseService.ts`, which handles:
+  - CSRF protection
+  - Automatic refresh of access tokens on expiration
+
+---
+
+## Routing
+- Uses **React Router (v7)** for navigation.
+- Routes are defined in `App.tsx`.
+- Implements nested routing with a `Layout` wrapper (`frontend/src/Layout.tsx`) for consistent UI across pages.
+
+---
+
+## UI Components & Styling
+- **Tailwind CSS** is used, with a custom configuration.
+- A custom UI component library is located in `src/components/ui`.
+- Components follow a consistent pattern and use TypeScript for prop definitions.
+- Components are customizable via variant props.
+- Uses shadcn/ui–inspired components (e.g., `Button`, `Card`, `Avatar`).
+- A custom color scheme is defined in `tailwind.config.js`.
+
+---
+
+## Message Localization
+- All text strings are (ideally) centralized in `frontend/src/utils/messages.ts` to maintain consistency.
+
