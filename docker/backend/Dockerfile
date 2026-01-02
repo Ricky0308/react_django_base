@@ -5,12 +5,14 @@ RUN ln -fs /usr/share/zoneinfo/Asia/Tokyo /etc/localtime && \
     ln -fs /usr/bin/python3 /usr/bin/python
 
 # Install dependencies
-RUN apt-get update &&\
-    apt-get install --yes curl\
-    default-mysql-client\
-    python3-dev\
-    default-libmysqlclient-dev\
-    gcc
+RUN apt-get update && \
+    apt-get install --yes --no-install-recommends \
+        curl \
+        python3-dev \
+        libpq-dev \
+        postgresql-client \
+        gcc && \
+    rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /backend

@@ -162,12 +162,12 @@ LOGGING = {
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': env("DB_NAME"),
         'USER': env("DB_USER"),
         'PASSWORD': env("DB_PASS"),
-        'HOST': 'docker-db-1',
-        'PORT': env("DB_PORT"),  # MySQL default port
+        'HOST': 'db',
+        'PORT': env("DB_PORT"),  # PostgreSQL default port
     }
 }
 

@@ -2,16 +2,15 @@ version: '3.8'
 
 services:
   db:
-    image: mysql:8.0
+    image: postgres:16
     volumes:
-      - db_volume:/var/lib/mysql
+      - fc_db:/var/lib/postgresql/data
     environment:
-      MYSQL_ROOT_PASSWORD: pass
-      MYSQL_DATABASE: main_db
-      MYSQL_USER: user
-      MYSQL_PASSWORD: yes
+      POSTGRES_DB: main_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: yes
     ports:
-      - "3333:3306"
+      - "5432:5432"
   
   backend:
     build:
