@@ -3,16 +3,13 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
 from datetime import timedelta
+from utils.primary_key import generate_secure_short_id
 
 class User(AbstractUser):
     """
     Custom User model where the ID is a UUID instead of an integer.
     """
-    id = models.UUIDField(
-        primary_key=True,
-        default=uuid.uuid4,
-        editable=False
-    )
+    id = models.CharField(max_length=16, primary_key=True, default=generate_secure_short_id, editable=False)
     pending_email = models.EmailField(blank=True, null=True)
     pending_email_expiration = models.DateTimeField(blank=True, null=True)
 
