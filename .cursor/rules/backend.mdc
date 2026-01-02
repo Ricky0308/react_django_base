@@ -36,12 +36,7 @@ alwaysApply: false
 - **Custom User Model Specification:**  
   The project uses a custom user model defined in `authentication.User`.  
 - **UUID as Primary Key:**  
-  The primary key (`user_id`) for the user model is a UUID field instead of the default integer.  
-- **Implications for Development:**  
-  - **User Lookup & Serialization:** Always treat the user identifier as a UUID. When performing lookups or logging, convert the UUID to a string if necessary.
-  - **Integration:** Ensure that any new functionality that interacts with the user model respects the UUID format for `user_id`.
-  - **Database Migrations:** Be mindful of the UUID configuration when making database schema changes or writing queries involving the user model.
-
+  The primary key (`user_id`) for the user model is a randomly generated fixed-digit string.
 
 
 # Logging
