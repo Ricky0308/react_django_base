@@ -4,6 +4,8 @@ djangorestframework==3.14.0
 django-cors-headers==3.14.0
 djangorestframework-simplejwt==5.2.2
 psycopg[binary]
+celery
+django-celery-beat
 django_ratelimit
 django-ipware==5.0.0
 setuptools

@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     
     # apps
     'Profile',
+    'django_celery_beat',
     
     # tools
     'django_extensions', # for ease of development
@@ -263,6 +264,25 @@ REST_FRAMEWORK = {
         # 'rest_framework.permissions.AllowAny',
         'rest_framework.permissions.IsAuthenticated',
     ],
+}
+
+# Celery 
+CELERY_BROKER_URL = env("CELERY_BROKER_URL", default="redis://redis:6379/0")
+CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND", default="redis://redis:6379/1")
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TIMEZONE = TIME_ZONE
+
+# Celery Beat Configuration
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+
+# Periodic Task Schedule
+CELERY_BEAT_SCHEDULE = {
+    # 'test-periodic-task': {
+    #     'task': 'config.tasks.test_periodic_task',
+    #     'schedule': 300.0,  # Run every 5 minutes
+    # },
 }
 
 # session token cookie property
